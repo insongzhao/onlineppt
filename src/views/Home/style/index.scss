@@ -1,0 +1,129 @@
+.home-container {
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.container-header {
+  position: fixed;
+  width: 100%;
+  height: 60px;
+  background-color: transparent;
+  z-index: 2;
+
+  .logo-pic {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    top: 4px;
+    left: 5 0px;
+    border: 1px solid #ffffff;
+  }
+
+  .header-login,
+  .header-register {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 15px;
+    font-size: 14px;
+    border-radius: 30px;
+    cursor: pointer;
+  }
+
+  .header-login {
+    right: 15%;
+
+    .login-text {
+      color: #ffffff;
+      line-height: 30px;
+    }
+  }
+
+  .header-register {
+    right: 12%;
+    text-align: center;
+    background-color: #ffffff;
+
+    .register-text {
+      color: #0ab087;
+      line-height: 30px;
+      font-weight: 700;
+    }
+  }
+
+  .header-avator {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    right: 7%;
+    margin-top: 4px;
+    border-radius: 50%;
+    border: 1px solid #ffffff;
+  }
+}
+
+.index-panel {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 750px;
+  box-sizing: border-box;
+  /*padding: 172px 0 0;*/
+  background: -webkit-gradient(linear,
+      left top,
+      right top,
+      from(#4bccb6),
+      to(#0ab087));
+  z-index: 1;
+
+  .panel-img-left {
+    width: 200px;
+    height: 750px;
+    border: 1px solid red;
+  }
+
+  .panel-img-right {
+    width: 300px;
+    height: 750px;
+    border: 1px solid red;
+  }
+
+  .panel-intro {
+    flex: 1;
+    width: 100%;
+    height: 130px;
+    margin-top: 150px;
+    text-align: center;
+    border: 1px solid black;
+
+    .intro-text {
+      display: block;
+      height: 70px;
+      color: #ffffff;
+      font-size: 48px;
+    }
+
+    .intro-tips {
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .more-feature {
+      width: 90px;
+      height: 25px;
+      margin: 0 auto;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #f1f3f4;
+      line-height: 25px;
+      border-radius: 12px;
+      background-color: rgb(46, 191, 160);
+      border: 1px solid #f1f3f4;
+      cursor: pointer;
+    }
+  }
+}

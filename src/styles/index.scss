@@ -1,0 +1,15 @@
+@import './layout.scss';
+@import './common.scss';
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+.x-center{
+  position: absolute;
+  left:50%;
+  transform: translateX(-50%)
+}

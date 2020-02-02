@@ -1,0 +1,79 @@
+.header-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 20px;
+  background-color: black;
+}
+
+.header-logo {
+  float: left;
+  width: 100px;
+  height: 60px;
+  border: 1px solid red;
+}
+.operate-btns{
+  float:left;
+  margin-left: 40px;
+  margin-top: 20px;
+  display:flex;
+  width: 120px;
+  height: 30px;
+  justify-content: space-between;
+  cursor: pointer;
+  .save-prev,
+  .return-prev,
+  .recover-prev{
+    width: 20px;
+    height: 20px;
+    line-height: 60px;
+  }
+  .save-prev{
+    background: url("~assets/editPage/save.png");
+  }
+  .return-prev{
+    background: url("~assets/editPage/return.png");
+  }
+  .recover-prev{
+    background: url("~assets/editPage/no-return.png");
+  }
+}
+.rename-word{
+  float: left;
+  margin-left: 40px;
+  margin-top: 15px;
+}
+.func-btns{
+  float: right;
+  display:flex;
+  justify-content: space-between;
+  width: 250px;
+  height: 30px;
+  margin-top: 15px;
+  line-height: 30px;
+  
+  .common{
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
+.demonstrate-btn{
+  width: 82px;
+  padding-left: 25px;
+  color: #ffffff;
+  font-size: 14px;
+  background:#0ab087 url("~assets/editPage/playPPT.png") no-repeat 10px 4px;
+}
+.delete-word,
+.return-home {
+  width: 65px;
+  font-size: 14px;
+  color: #e6e6e6;
+  text-align: center;
+  background-color: rgb(62,69,86);
+  &:hover{
+    background-color: rgb(116,125,144);
+  }
+}
