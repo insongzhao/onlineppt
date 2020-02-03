@@ -17,7 +17,7 @@ export default {
       canvasWidth: 1515,
       canvasHeight: 766,
       doDrawing: false, // 绘制状态
-      drawingObject: "", // 当前绘制对象
+      drawingObject: null, // 当前绘制对象
       // 鼠标按下的起点
       mouseFrom: {
         x: 0,
@@ -30,7 +30,7 @@ export default {
       drawType: "", // 选中的要绘制的图形
       color: "#000000",
       drawWidth: 2, // 笔触宽度
-      canvasObject: "",
+      canvasObject: null,
       moveCount: 0 // 绘制移动计数器
     };
   },
@@ -51,11 +51,10 @@ export default {
 
     // 初始化
     initCanvas() {
-      let _this = this;
       this.canvasObj = new fabric.Canvas("canvas", {
-        isDrawingMode: false, //设置是否可以绘制
-        selectable: false, //设置控件是否可以选中拖动
-        selection: false, //整个画板是否被选中
+        isDrawingMode: true, //设置是否可以绘制
+        selectable: true, //设置控件是否可以选中拖动
+        selection: true, //整个画板是否被选中
         skipTargetFind: true //整个画板元素不能被选中
       });
       this.canvasObj.setWidth(this.canvasWidth); //设置画布的宽度
@@ -77,7 +76,7 @@ export default {
           this.mouseTo.x = o.pointer.x;
           this.mouseTo.y = o.pointer.y;
           this.drawingObject = null;
-          this.moveCount++;
+          this.moveCount=1;
           console.log("次数", this.moveCount);
 
           this.doDrawing = false; //停止绘制
@@ -86,9 +85,10 @@ export default {
           //鼠标在移动中的事件
           this.offsetX = o.pointer.x.toFixed(0);
           this.offsetY = o.pointer.y.toFixed(0);
-          if (!_this.doDrawing) {
+          if (this.moveCount % 2 && !this.doDrawing) {
             return;
           }
+          this.moveCount++;
           this.mouseTo.x = o.pointer.x;
           this.mouseTo.y = o.pointer.y;
           this.drawing(this.drawType);
@@ -109,6 +109,9 @@ export default {
     },
 
     drawing(type) {
+       if(this.drawingObject){
+          this.canvasObj.remove(this.drawingObject)
+        }
       switch (type) {
         case "line": {
           this.resetObj();
@@ -121,7 +124,9 @@ export default {
             ],
             {
               stroke: this.color,
-              strokeWidth: this.drawWidth
+              strokeWidth: this.drawWidth,
+              hasControls: false, // 是否开启图层的控件
+              borderColor: 'orange' // 图层控件边框的颜色
             }
           );
           break;
