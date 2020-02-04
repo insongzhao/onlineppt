@@ -52,7 +52,7 @@ export default {
     // 初始化
     initCanvas() {
       this.canvasObj = new fabric.Canvas("canvas", {
-        isDrawingMode: true, //设置是否可以绘制
+        isDrawingMode: false, //设置是否可以绘制
         selectable: true, //设置控件是否可以选中拖动
         selection: true, //整个画板是否被选中
         skipTargetFind: true //整个画板元素不能被选中
@@ -76,8 +76,12 @@ export default {
           this.mouseTo.x = o.pointer.x;
           this.mouseTo.y = o.pointer.y;
           this.drawingObject = null;
-          this.moveCount=1;
+          this.moveCount = 1;
           console.log("次数", this.moveCount);
+
+          this.drawType = "";
+          this.canvasObj.selectable = true;
+          this.canvasObj.selection = true;
 
           this.doDrawing = false; //停止绘制
         },
@@ -95,6 +99,9 @@ export default {
         },
         "object:move": e => {
           e.target.opacity = 0.5; //你绘画在画布上对象，移动它们的时候，让它们的透明度变成0.5
+        },
+        "selection:created": e => {
+          console.log(e.target);
         }
         // "object:added": e => {
         //   if (!this.controlFlag) {
@@ -109,9 +116,10 @@ export default {
     },
 
     drawing(type) {
-       if(this.drawingObject){
-          this.canvasObj.remove(this.drawingObject)
-        }
+      console.log("type", type);
+      if (this.drawingObject) {
+        this.canvasObj.remove(this.drawingObject);
+      }
       switch (type) {
         case "line": {
           this.resetObj();
@@ -126,7 +134,26 @@ export default {
               stroke: this.color,
               strokeWidth: this.drawWidth,
               hasControls: false, // 是否开启图层的控件
-              borderColor: 'orange' // 图层控件边框的颜色
+              borderColor: "orange" // 图层控件边框的颜色
+            }
+          );
+          break;
+        }
+        case "row-line": {
+          this.resetObj();
+          this.canvasObject = new fabric.Path(
+            this.drawArrow(
+              this.mouseFrom.x,
+              this.mouseFrom.y,
+              this.mouseTo.x,
+              this.mouseTo.y,
+              15,
+              15
+            ),
+            {
+              stroke: this.color,
+              fill: "rgba(255,255,255,0)",
+              strokeWidth: this.drawWidth
             }
           );
           break;
@@ -148,12 +175,85 @@ export default {
           );
           break;
         }
+        // inging
+        case "rectangle": {
+          this.resetObj();
+          this.canvasObject = new fabric.Rect({
+            left: this.mouseFrom.x,
+            top: this.mouseFrom.y,
+            width: this.mouseTo.x - this.mouseFrom.x,
+            height: this.mouseTo.y - this.mouseFrom.y,
+            stroke: this.color,
+            strokeWidth: this.drawWidth,
+            fill: "rgba(255,255,255,0)"
+          });
+          break;
+        }
+        // 等边三角形
+        case "equilateral": {
+          this.resetObj();
+          let height = this.mouseTo.y - this.mouseFrom.y;
+          this.canvasObject = new fabric.Triangle({
+            top: this.mouseFrom.y,
+            left: this.mouseFrom.x,
+            width: Math.sqrt(Math.pow(height, 2) + Math.pow(height / 2.0, 2)),
+            height: height,
+            stroke: this.color,
+            strokeWidth: this.drawWidth,
+            fill: "rgba(255,255,255,0)"
+          });
+          break;
+        }
+        // 正圆
+        case "circle": {
+          var left = this.mouseFrom.x,
+            top = this.mouseFrom.y;
+          var radius =
+            Math.sqrt(
+              (this.mouseTo.x - left) * (this.mouseTo.x - left) +
+                (this.mouseTo.y - top) * (this.mouseTo.y - top)
+            ) / 2;
+          this.canvasObject = new fabric.Circle({
+            left: left,
+            top: top,
+            stroke: this.color,
+            fill: "rgba(255, 255, 255, 0)",
+            radius: radius,
+            strokeWidth: this.drawWidth
+          });
+          break;
+        }
       }
       if (this.canvasObject) {
         // canvasObject.index = getCanvasObjectIndex();
         this.canvasObj.add(this.canvasObject); //.setActiveObject(canvasObject)
         this.drawingObject = this.canvasObject;
       }
+    },
+    //绘制箭头方法
+    drawArrow(fromX, fromY, toX, toY, theta, headlen) {
+      theta = typeof theta != "undefined" ? theta : 30;
+      headlen = typeof theta != "undefined" ? headlen : 10;
+      // 计算各角度和对应的P2,P3坐标
+      var angle = (Math.atan2(fromY - toY, fromX - toX) * 180) / Math.PI,
+        angle1 = ((angle + theta) * Math.PI) / 180,
+        angle2 = ((angle - theta) * Math.PI) / 180,
+        topX = headlen * Math.cos(angle1),
+        topY = headlen * Math.sin(angle1),
+        botX = headlen * Math.cos(angle2),
+        botY = headlen * Math.sin(angle2);
+      var arrowX = fromX - topX,
+        arrowY = fromY - topY;
+      var path = " M " + fromX + " " + fromY;
+      path += " L " + toX + " " + toY;
+      arrowX = toX + topX;
+      arrowY = toY + topY;
+      path += " M " + arrowX + " " + arrowY;
+      path += " L " + toX + " " + toY;
+      arrowX = toX + botX;
+      arrowY = toY + botY;
+      path += " L " + arrowX + " " + arrowY;
+      return path;
     }
   }
 };

@@ -4,33 +4,28 @@
     <div class="action-bar">
       <div class="action-bar-tools">
         <div
-          class="icon"
+          class="icon noselect"
           v-for="(item, index) in iconList"
           :key="index"
           :title="item.title"
-          @click="showDetails(index)"
+          @click.stop="showDetails(index)"
         >
           <img :src="item.iconUrl" />
         </div>
-        <div
-          class="action-theme icon set-btn"
-          title="主题"
-          @click="showDetails(8)"
-        >
-          主题
-        </div>
-        <div
-          class="action-fade icon set-btn"
-          title="过渡效果"
-          @click="showDetails(9)"
-        >
-          过渡效果
-        </div>
+        <div class="action-theme icon set-btn" title="主题" @click="showDetails(8)">主题</div>
+        <div class="action-fade icon set-btn" title="过渡效果" @click="showDetails(9)">过渡效果</div>
       </div>
     </div>
 
     <!-- 形状 -->
-    <shape v-show="isShowShape"></shape>
+    <transition name="zoom">
+      <shape v-show="isShowShape"></shape>
+    </transition>
+
+    <!-- 文本 -->
+    <transition name="zoom">
+      <edit-text v-show="isShowText"></edit-text>
+    </transition>
 
     <!-- canvas 编辑模块 -->
     <edit-canvas></edit-canvas>
@@ -39,16 +34,19 @@
 
 <script>
 import Shape from "./components/shape";
+import EditText from "./components/edit-text";
 import EditCanvas from "./components/edit-canvas";
 export default {
   name: "edit-container",
   components: {
     Shape,
-    EditCanvas
+    EditCanvas,
+    EditText
   },
   data() {
     return {
       isShowShape: false,
+      isShowText: false,
       iconList: [
         {
           title: "文本",
@@ -82,31 +80,27 @@ export default {
     };
   },
   mounted() {
-    // this.initPage();
+    this.initPage();
   },
   methods: {
-    // initPage() {
-    //   // 点击其他不在的区域触发事件
-    //   document.body.addEventListener(
-    //     "click",
-    //     function() {
-    //       this.outside = true;
-    //     },
-    //     true
-    //   );
-    //   document.body.addEventListener("click", function() {
-    //     console.log("outside", this.outside);
-    //     if (this.outside) {
-    //       console.log("close");
-    //       this.isShowShape = false;
-    //     }
-    //   });
-    // },
+    /**点击其他区域收起下拉框 */
+    initPage() {
+      let _this = this;
+      document.addEventListener("click", () => {
+        _this.initPara();
+      });
+    },
+    initPara() {
+      this.isShowShape = false;
+      this.isShowText = false;
+    },
     showDetails(id) {
-      console.log("del", this.outside);
       switch (id) {
+        case 0:
+          this.isShowText = !this.isShowText;
+          break;
         case 1:
-          this.isShowShape = true;
+          this.isShowShape = !this.isShowShape;
           break;
       }
     }

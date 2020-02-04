@@ -57,7 +57,7 @@ export default {
               iconUrl: require("@/assets/editPage/shape/rectangle.png")
             },
             {
-              drawType: "triangle",
+              drawType: "equilateral",
               iconUrl: require("@/assets/editPage/shape/triangle.png")
             },
             {
