@@ -12,8 +12,20 @@
         >
           <img :src="item.iconUrl" />
         </div>
-        <div class="action-theme icon set-btn" title="主题" @click="showDetails(8)">主题</div>
-        <div class="action-fade icon set-btn" title="过渡效果" @click="showDetails(9)">过渡效果</div>
+        <div
+          class="action-theme icon set-btn"
+          title="主题"
+          @click="showDetails(8)"
+        >
+          主题
+        </div>
+        <div
+          class="action-fade icon set-btn"
+          title="过渡效果"
+          @click="showDetails(9)"
+        >
+          过渡效果
+        </div>
       </div>
     </div>
 
@@ -27,26 +39,42 @@
       <edit-text v-show="isShowText"></edit-text>
     </transition>
 
+    <!-- 填充 -->
+    <transition name="zoom">
+      <fill v-show="isShowFill" ref="fillColor"></fill>
+    </transition>
+
+    <!-- 主题 -->
+    <transition name="zoom">
+      <theme v-show="isShowTheme" ref="fillColor"></theme>
+    </transition>
+
     <!-- canvas 编辑模块 -->
-    <edit-canvas></edit-canvas>
+    <edit-canvas ref="editCanvas" @currentState="getState"></edit-canvas>
   </div>
 </template>
 
 <script>
-import Shape from "./components/shape";
-import EditText from "./components/edit-text";
-import EditCanvas from "./components/edit-canvas";
+import Shape from "./shape";
+import EditText from "./edit-text";
+import EditCanvas from "./edit-canvas";
+import Fill from "./fill";
+import Theme from "./theme";
 export default {
   name: "edit-container",
   components: {
     Shape,
     EditCanvas,
-    EditText
+    EditText,
+    Fill,
+    Theme
   },
   data() {
     return {
       isShowShape: false,
       isShowText: false,
+      isShowFill: false,
+      isShowTheme: false,
       iconList: [
         {
           title: "文本",
@@ -76,11 +104,12 @@ export default {
           title: "旋转",
           iconUrl: require("@/assets/editPage/rotate.png")
         }
-      ]
+      ],
+      currentState: "" //当前画布状态
     };
   },
   mounted() {
-    this.initPage();
+    // this.initPage();
   },
   methods: {
     /**点击其他区域收起下拉框 */
@@ -93,16 +122,34 @@ export default {
     initPara() {
       this.isShowShape = false;
       this.isShowText = false;
+      this.isShowFill = false;
+      this.isShowTheme = false;
     },
+    /**下拉框显示 */
     showDetails(id) {
       switch (id) {
-        case 0:
+        case 0: // 文本
           this.isShowText = !this.isShowText;
           break;
-        case 1:
+        case 1: // 形状
           this.isShowShape = !this.isShowShape;
           break;
+        case 4: // 填充
+          this.isShowFill = !this.isShowFill;
+          break;
+        case 6: //旋转
+          this.$refs.editCanvas.rotateObj();
+          break;
+        case 8: //主题
+          this.isShowTheme = !this.isShowTheme;
+          break;
       }
+    },
+
+    /**获取编辑状态 */
+    getState(data) {
+      this.currentState = data;
+      this.$Bus.$emit("currentState", this.currentState);
     }
   }
 };

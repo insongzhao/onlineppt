@@ -33,27 +33,52 @@ export default {
     return {
       countList: [],
       canvasWidth: 250,
-      canvasHeight: 150
+      canvasHeight: 150,
+      currentState: "" // 画布状态
     };
   },
   mounted() {
     this.initCanvas();
+
+    this.$Bus.$on("currentState", e => {
+      this.currentState = e;
+      console.log("current", this.currentState);
+    });
+  },
+  watch: {
+    currentState: {
+      deep: true,
+      handler: function() {
+        this.loadCanvasForm(this.currentState);
+      }
+    }
   },
   methods: {
     /**初始化 canvas */
     initCanvas() {
-      this.canvasObj = new fabric.Canvas("side-canvas", {
+      this.sideCanvasObj = new fabric.Canvas("side-canvas", {
         isDrawingMode: false, //设置是否可以绘制
         selectable: false, //设置控件是否可以选中拖动
         selection: false, //整个画板是否被选中
         skipTargetFind: true //整个画板元素不能被选中
       });
-      this.canvasObj.setWidth(this.canvasWidth); //设置画布的宽度
-      this.canvasObj.setHeight(this.canvasHeight); //设置画布的高度
+      this.sideCanvasObj.setWidth(this.canvasWidth); //设置画布的宽度
+      this.sideCanvasObj.setHeight(this.canvasHeight); //设置画布的高度
     },
+
     /**添加空白幻灯片 */
     addCanvas() {
       this.countList.push({});
+    },
+
+    /**加载画布信息 */
+    loadCanvasForm(lastState) {
+      console.log("侧边栏");
+
+      this.sideCanvasObj.loadFromJSON(lastState, () => {
+        this.sideCanvasObj.renderAll();
+        console.log(this.sideCanvasObj.toJSON());
+      });
     }
   }
 };

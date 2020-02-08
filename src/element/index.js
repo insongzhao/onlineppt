@@ -22,6 +22,7 @@ import {
   DropdownItem,
   Message,
   Checkbox,
+  ColorPicker,
   Progress
 } from "element-ui";
 const element = {
@@ -37,6 +38,7 @@ const element = {
     Vue.use(Select);
     Vue.use(Option);
     Vue.use(Button);
+    Vue.use(ColorPicker);
     Vue.use(OptionGroup);
     Vue.use(Input);
     Vue.use(Tree);
