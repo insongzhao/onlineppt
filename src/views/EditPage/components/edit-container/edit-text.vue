@@ -32,6 +32,7 @@ export default {
 <style lang="scss" scope>
 .edit-text-box {
   position: absolute;
+  left: 250px;
   z-index: 999;
 }
 .edit-type {

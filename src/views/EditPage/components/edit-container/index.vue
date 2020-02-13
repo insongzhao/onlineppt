@@ -26,6 +26,13 @@
         >
           过渡效果
         </div>
+        <div
+          class="action-clear icon set-btn"
+          title="清空画布"
+          @click="clearCanvas"
+        >
+          清空
+        </div>
       </div>
     </div>
 
@@ -44,6 +51,24 @@
       <fill v-show="isShowFill" ref="fillColor"></fill>
     </transition>
 
+    <!-- 描边 -->
+    <transition name="zoom">
+      <stroke v-show="isShowStroke" ref=""></stroke>
+    </transition>
+
+    <!-- 旋转 -->
+    <transition name="zoom">
+      <rotate
+        v-show="isShowRotate"
+        ref="rotateCanvas"
+        @clockwiseRotate="clockwiseRotate"
+        @anticlockwiseRotate="anticlockwiseRotate"
+        @rotateScaleX="rotateScaleX"
+        @rotateScaleY="rotateScaleY"
+        @customizeRotate="customizeRotate"
+      ></rotate>
+    </transition>
+
     <!-- 主题 -->
     <transition name="zoom">
       <theme v-show="isShowTheme" ref="fillColor"></theme>
@@ -60,6 +85,8 @@ import EditText from "./edit-text";
 import EditCanvas from "./edit-canvas";
 import Fill from "./fill";
 import Theme from "./theme";
+import Rotate from "./rotate";
+import Stroke from "./stroke";
 export default {
   name: "edit-container",
   components: {
@@ -67,7 +94,9 @@ export default {
     EditCanvas,
     EditText,
     Fill,
-    Theme
+    Theme,
+    Rotate,
+    Stroke
   },
   data() {
     return {
@@ -75,6 +104,8 @@ export default {
       isShowText: false,
       isShowFill: false,
       isShowTheme: false,
+      isShowRotate: false,
+      isShowStroke: false,
       iconList: [
         {
           title: "文本",
@@ -124,6 +155,8 @@ export default {
       this.isShowText = false;
       this.isShowFill = false;
       this.isShowTheme = false;
+      this.isShowRotate = false;
+      this.isShowStroke = false;
     },
     /**下拉框显示 */
     showDetails(id) {
@@ -137,8 +170,11 @@ export default {
         case 4: // 填充
           this.isShowFill = !this.isShowFill;
           break;
+        case 5: // 描边
+          this.isShowStroke = !this.isShowStroke;
+          break;
         case 6: //旋转
-          this.$refs.editCanvas.rotateObj();
+          this.isShowRotate = !this.isShowRotate;
           break;
         case 8: //主题
           this.isShowTheme = !this.isShowTheme;
@@ -150,6 +186,35 @@ export default {
     getState(data) {
       this.currentState = data;
       this.$Bus.$emit("currentState", this.currentState);
+    },
+
+    /**清空画布 */
+    clearCanvas() {
+      this.$refs.editCanvas.clearCanvas();
+    },
+
+    /**顺时针旋转 */
+    clockwiseRotate(clockwiseAngle) {
+      console.log("clockwiseAngle", clockwiseAngle);
+      this.$refs.editCanvas.rotateObj(clockwiseAngle);
+    },
+
+    /**逆时针旋转 */
+    anticlockwiseRotate(anticlockwiseAngle) {
+      console.log("anticlockwiseAngle", anticlockwiseAngle);
+      this.$refs.editCanvas.rotateObj(anticlockwiseAngle);
+    },
+
+    rotateScaleX() {
+      this.$refs.editCanvas.scaleXObj();
+    },
+
+    rotateScaleY() {
+      this.$refs.editCanvas.scaleYObj();
+    },
+
+    customizeRotate(angelNum) {
+      this.$refs.editCanvas.customizeRotate(angelNum);
     }
   }
 };

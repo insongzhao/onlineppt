@@ -30,12 +30,17 @@
         overflow-y: auto;
         overflow-x: hidden;
         border: 1px solid black;
+        .select {
+          border: 2px solid #08C671!important;
+        }
         .side-ppt-item{
           position: relative;
-          width: 252px;
-          height: 152px;
+          width: 254px;
+          height: 154px;
           margin: 0 auto;
+          margin-bottom: 20px;
           border: 1px solid #0ab087;
+          cursor: pointer;
           .item-btns{
             position: absolute;
             display: flex;
@@ -45,7 +50,7 @@
             top: 5px;
             right: 10px;
             border: 1px solid black;
-            z-index: 9999;
+            z-index: 99;
             .item-delete,
             .item-create {
               width: 24px;

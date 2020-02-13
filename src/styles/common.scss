@@ -22,3 +22,54 @@
     font-size: 14px;
     border-radius: 6px;
   }
+  .zoom-enter-active {
+    animation: ease-in-out zoomIn .25s;
+  }
+  .zoom-leave-active {
+    animation: ease-in-out zoomIn reverse .25s;
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3);
+    }
+  
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fly {
+    from {
+      opacity: .5;
+      top: 20%;
+      left: 75%;
+    }
+  
+    50% {
+      opacity: .75;
+    }
+  }
+  
+  @keyframes upload {
+    from {
+      opacity: .5;
+      transform: translateY(-20%);
+    }
+  
+    50% {
+      opacity: .75;
+    }
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: .5;
+      transform: translateY(-150%);
+    }
+  
+    50% {
+      opacity: .75;
+    }
+  }

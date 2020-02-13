@@ -1,7 +1,7 @@
 <!--主题 -->
 <template>
   <div class="theme-box">
-    <el-card class="box-card theme-card">
+    <el-card class="theme-card">
       <input
         type="file"
         ref="importImg"
@@ -60,15 +60,12 @@ export default {
 <style lang="scss" scope>
 .theme-box {
   position: absolute;
+  left: 350px;
   z-index: 999;
 }
-.box-card {
-  position: absolute;
+.theme-card {
   width: 200px;
   height: 200px;
-}
-.theme-card {
-  left: 350px;
 }
 .img-theme {
   width: 100px;

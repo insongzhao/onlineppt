@@ -37,7 +37,11 @@ export default {
       isFill: false, // 是否进行填充
       bgImgUrl: "", // 背景图片地址
       themeColor: "", // 主题背景色
-      currentState: "" // 画布状态
+      currentState: "", // 画布状态
+      svg: "",
+      canvasImg: "", // 画布导出成图片
+      clearMode: false, // 是否清空画布
+      lastAngel: 0, // 图层的角度
     };
   },
   mounted() {
@@ -58,7 +62,10 @@ export default {
     });
     this.$Bus.$on("themeColor", e => {
       this.themeColor = e;
-    })
+    });
+    this.$Bus.$on("clearMode", e => {
+      this.clearMode = e;
+    });
   },
   watch: {
     selectedColor: {
@@ -78,6 +85,14 @@ export default {
       handler: function() {
         this.importBgColor(this.themeColor);
       }
+    },
+    clearMode: {
+      deep: true,
+      handler: function() {
+        console.log("==========");
+        this.clearCanvas();
+        this.getCanvas(this.currentState);
+      }
     }
   },
   methods: {
@@ -96,6 +111,7 @@ export default {
 
     // 初始化
     initCanvas() {
+      // var _this = this;
       this.canvasObj = new fabric.Canvas("canvas", {
         isDrawingMode: false, //设置是否可以绘制
         selectable: true, //设置控件是否可以选中拖动
@@ -132,6 +148,7 @@ export default {
           this.doDrawing = false; //停止绘制
 
           this.getCanvasState();
+          this.canvastoImg();
         },
         "mouse:move": o => {
           //鼠标在移动中的事件
@@ -154,28 +171,46 @@ export default {
         },
         "object:added": e => {
           console.log("add");
-          // if (!this.controlFlag) {
-          //   this.redo = []; //撤回用的
-          // }
-          // this.controlFlag = false;
         },
         "object:modified": e => {
-          e.target.opacity = 1;
+          // e.target.opacity = 1;
+          console.log("修改++++++++", e.target);
         }
       });
     },
 
-    /**旋转对象 顺时针90度*/
-    rotateObj() {
+    /**旋转对象*/
+    rotateObj(rotateAngle) {
       const currAngle = this.selectedObj.angle; // 当前图层的角度
-      console.log("jiaodu", currAngle);
-      console.log(this.selectedObj);
-      const angle = currAngle === 360 ? 90 : currAngle + 90;
-      console.log(angle);
-      this.selectedObj.rotate(angle);
+      this.lastAngel =
+        currAngle === 360 ? rotateAngle : currAngle + rotateAngle;
+      this.selectedObj.rotate(this.lastAngel);
+      this.canvasObj.renderAll();
+      this.$Bus.$emit("lastAngel", this.lastAngel);
+    },
+
+    /**翻转对象 水平镜像*/
+    scaleXObj() {
+      this.selectedObj.set({
+        scaleX: -this.selectedObj.scaleX
+      });
       this.canvasObj.renderAll();
     },
 
+    /**翻转对象 垂直镜像 */
+    scaleYObj() {
+      this.selectedObj.set({
+        scaleY: -this.selectedObj.scaleY
+      });
+      this.canvasObj.renderAll();
+    },
+
+    /**自定义旋转 */
+    customizeRotate(angelNum) {
+      console.log("angelNum", angelNum);
+      this.selectedObj.rotate(angelNum);
+      this.canvasObj.renderAll();
+    },
     /**填充颜色 */
     fillColor(color) {
       this.selectedObj.set("fill", color);
@@ -393,7 +428,35 @@ export default {
     getCanvasState() {
       this.currentState = this.canvasObj.toJSON();
       console.log("当前状态", this.currentState);
-      this.$emit("currentState", this.currentState);
+      this.$Bus.$emit("currentState", this.currentState);
+    },
+
+    /**画布转成 svg */
+    canvastoSvg() {
+      this.svg = this.canvasObj.toSVG();
+      console.log(this.svg);
+    },
+
+    /**画布导出成图片 */
+    canvastoImg() {
+      this.canvasImg = this.canvasObj.toDataURL({
+        format: "png"
+      });
+      this.$Bus.$emit("canvasImg", this.canvasImg);
+    },
+
+    /**清空画布 */
+    clearCanvas() {
+      console.log("清空画布");
+      this.canvasObj.clear();
+    },
+
+    /**渲染画布状态 */
+    getCanvas(lastCurrent) {
+      console.log("zhuangtai+++++++++", lastCurrent);
+      this.canvasObj.loadFromJSON(lastCurrent, () => {
+        this.canvasObj.renderAll();
+      })
     }
   }
 };

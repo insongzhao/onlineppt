@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   Dropdown,
   DropdownItem,
+  InputNumber,
   Message,
   Checkbox,
   ColorPicker,
@@ -51,6 +52,7 @@ const element = {
     Vue.use(DropdownItem);
     Vue.use(Checkbox);
     Vue.use(Progress);
+    Vue.use(InputNumber);
     Vue.prototype.$message = Message;
   }
 };
