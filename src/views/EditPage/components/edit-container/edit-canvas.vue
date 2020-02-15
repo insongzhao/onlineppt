@@ -42,6 +42,21 @@ export default {
       canvasImg: "", // 画布导出成图片
       clearMode: false, // 是否清空画布
       lastAngel: 0, // 图层的角度
+
+      //撤销回退相关操作状态配置表
+      config: {
+        canvasState: [], //存储各状态的json数据
+        currentStateIndex: -1,
+        undoStatus: false, //撤销
+        redoStatus: false, //回退
+        undoFinishedStatus: 1, //撤销中的状态
+        redoFinishedStatus: 1, //回退中的状态
+        undoBtnStatus: false, //撤销按钮可点击状态
+        redoBtnStatus: false, //回退按钮可点击状态
+        initialNum: 0,
+        isStart: false
+      },
+      isInitialStatus: false // 是否为初始状态
     };
   },
   mounted() {
@@ -103,12 +118,11 @@ export default {
     },
 
     resetObj() {
-      // this.canvasObj.isDrawingMode = false;
-      // this.canvasObj.selectable = false;
-      // this.canvasObj.selection = false;
-      // this.canvasObj.skipTargetFind = true;
+      this.canvasObj.isDrawingMode = false;
+      this.canvasObj.selectable = true;
+      this.canvasObj.selection = true;
+      this.canvasObj.skipTargetFind = true;
     },
-
     // 初始化
     initCanvas() {
       // var _this = this;
@@ -146,7 +160,6 @@ export default {
           this.canvasObj.selection = true;
 
           this.doDrawing = false; //停止绘制
-
           this.getCanvasState();
           this.canvastoImg();
         },
@@ -170,11 +183,14 @@ export default {
           this.selectedObj = e.target;
         },
         "object:added": e => {
-          console.log("add");
+          console.log("add", e);
         },
         "object:modified": e => {
           // e.target.opacity = 1;
           console.log("修改++++++++", e.target);
+        },
+        "after:render": e => {
+          console.log("画布渲染之后", e);
         }
       });
     },
@@ -276,10 +292,12 @@ export default {
             {
               stroke: this.color,
               strokeWidth: this.drawWidth,
-              hasControls: false, // 是否开启图层的控件
+              hasControls: true, // 是否开启图层的控件
               borderColor: "orange" // 图层控件边框的颜色
             }
           );
+          this.canvasObj.selection = true;
+          this.canvasObj.selectable = true;
           break;
         }
         // 箭头
@@ -426,7 +444,7 @@ export default {
 
     /**画布状态记录 */
     getCanvasState() {
-      this.currentState = this.canvasObj.toJSON();
+      this.currentState = JSON.stringify(this.canvasObj.toJSON());
       console.log("当前状态", this.currentState);
       this.$Bus.$emit("currentState", this.currentState);
     },
@@ -456,7 +474,39 @@ export default {
       console.log("zhuangtai+++++++++", lastCurrent);
       this.canvasObj.loadFromJSON(lastCurrent, () => {
         this.canvasObj.renderAll();
-      })
+      });
+    },
+
+    /**记录每步操作,用户撤销和回退操作 */
+    updateCanvasState() {
+      if (this.config.undoStatus == false && this.config.redoStatus == false) {
+        if (
+          this.config.currentStateIndex <
+          this.config.canvasState.length - 1
+        ) {
+          //回退操作更新
+          let oldData = JSON.parse(JSON.stringify(this.config.canvasState));
+          this.config.canvasState = oldData.splice(
+            0,
+            this.config.currentStateIndex + 1
+          );
+          this.config.canvasState.push(this.currentState);
+        } else {
+          this.config.canvasState.push(this.currentState);
+        }
+        this.config.currentStateIndex = this.config.canvasState.length - 1;
+        // updateUnRedoBtnStatus();
+        if (
+          this.config.currentStateIndex == this.config.canvasState.length - 1 &&
+          this.config.currentStateIndex == 0
+        ) {
+          return;
+        }
+        if (this.isInitialStatus) {
+          this.isInitialStatus = false;
+          // updateInitialStatus(this.isInitialStatus);
+        }
+      }
     }
   }
 };
