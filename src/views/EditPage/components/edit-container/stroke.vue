@@ -6,7 +6,9 @@
         <div class="border-module" title="描边样式">
           <div class="pull-module-btn">
             <span class="module-display">
-              <i class="edit-icon edit-icon-none" v-show="isShowTitle">无标题</i>
+              <i class="edit-icon edit-icon-none" v-show="isShowTitle"
+                >无标题</i
+              >
               <i class="edit-icon edit-icon-line" v-show="isShowLine"></i>
               <i
                 class="edit-icon edit-icon-dash_little"
@@ -17,46 +19,57 @@
                 v-show="isShowBigDash"
               ></i>
             </span>
-            <div class="select-btn" @click="selectStroke"></div>
+            <div
+              class="select-btn"
+              :class="{ selected: isShowMenu }"
+              @click="selectStroke"
+            ></div>
           </div>
         </div>
         <div class="select-menu" v-show="isShowMenu">
-          <i class="menu-icon edit-icon-none" @click="showStrokeStyle(1)">
-            无标题
-          </i>
+          <i class="menu-icon edit-icon-none" @click="showStrokeStyle(1)"
+            >无标题</i
+          >
           <i class="menu-icon edit-icon-line" @click="showStrokeStyle(2)"></i>
           <i
-            class=" menu-icon edit-icon-dash_little"
+            class="menu-icon edit-icon-dash_little"
             @click="showStrokeStyle(3)"
           ></i>
           <i
-            class=" menu-icon edit-icon-dash_big"
+            class="menu-icon edit-icon-dash_big"
             @click="showStrokeStyle(4)"
           ></i>
         </div>
       </div>
       <div class="border-thickness">
-        <div class="border-module" title="粗细">
+        <div class="border-module" title="描边粗细">
           <div class="pull-module-btn">
             <span class="module-display">
               <i class="edit-icon edit-ico-line_weight"></i>
             </span>
-            <div class="select-btn" @click="showThickMenu"></div>
+            <div
+              class="select-btn"
+              :class="{ active: isShowList }"
+              @click="showThickMenu"
+            ></div>
           </div>
-          <ul class="module-list">
-                <li title="1"><span style="height:1px"></span></li>
-                <li title="2"><span style="height:2px"></span></li>
-                <li title="3"><span style="height:3px"></span></li>
-                <li title="4"><span style="height:4px"></span></li>
-                <li title="5"><span style="height:5px"></span></li>
-                <li title="6"><span style="height:6px"></span></li>
-                <li title="7"><span style="height:7px"></span></li>
-                <li title="8"><span style="height:8px"></span></li>
-                <li title="12"><span style="height:12px"></span></li>
-                <li title="16"><span style="height:16px"></span></li>
-                <li title="24"><span style="height:24px"></span></li>
-              </ul>
+          <ul class="stroke-module-list" v-show="isShowList">
+            <li
+              v-for="(item, index) in strokeList"
+              :key="index"
+              :title="item.thickness"
+              @click="chooseThick(item.thickness)"
+            >
+              <span :style="`height:${item.thickness}px`"></span>
+            </li>
+          </ul>
         </div>
+      </div>
+      <div class="pick-stroke-color">
+        <el-color-picker
+          v-model="defaultColor"
+          @change="strokeColor"
+        ></el-color-picker>
       </div>
     </el-card>
   </div>
@@ -70,7 +83,23 @@ export default {
       isShowLitDash: false,
       isShowLine: false,
       isShowBigDash: false,
-      isShowTitle: true
+      isShowTitle: true,
+      isShowList: false, // 是否显示粗细下拉框
+      defaultColor: "#000000",
+      strokeList: [
+        { thickness: 1 },
+        { thickness: 2 },
+        { thickness: 3 },
+        { thickness: 4 },
+        { thickness: 5 },
+        { thickness: 6 },
+        { thickness: 6 },
+        { thickness: 7 },
+        { thickness: 8 },
+        { thickness: 12 },
+        { thickness: 16 },
+        { thickness: 24 }
+      ]
     };
   },
   methods: {
@@ -111,9 +140,13 @@ export default {
 
     /**显示粗细下拉框 */
     showThickMenu() {
-
+      this.isShowList = !this.isShowList;
     },
-    
+
+    /**选择描边的粗细 */
+    chooseThick(item) {
+      console.log("thick", item);
+    }
   }
 };
 </script>
@@ -125,7 +158,7 @@ export default {
 }
 .card-box {
   width: 300px;
-  height: 300px;
+  height: 150px;
 }
 .border-style {
   position: absolute;
@@ -171,8 +204,12 @@ export default {
   right: 4px;
   top: 4px;
   border: 1p solid black;
-  background: url("~assets/editPage/stroke/selected.png");
+  background: url("~assets/editPage/stroke/selected_n.png") no-repeat;
   cursor: pointer;
+}
+.selected,
+.active {
+  background: url("~assets/editPage/stroke/selected_s.png") no-repeat;
 }
 .select-menu {
   position: absolute;
@@ -207,7 +244,7 @@ export default {
   height: 30px;
   right: 10px;
 }
-.module-list {
+.stroke-module-list {
   position: absolute;
   top: 30px;
   left: 0;
@@ -225,6 +262,7 @@ export default {
     text-align: center;
     height: 30px;
     line-height: 30px;
+    cursor: pointer;
     span {
       display: inline-block;
       vertical-align: middle;
@@ -237,5 +275,18 @@ export default {
   width: 80px;
   height: 30px;
   border: 1px solid black;
+}
+.pick-stroke-color {
+  position: absolute;
+  width: 120px;
+  height: 40px;
+  top: 60px;
+  border: 1px solid #e9eaec;
+}
+</style>
+<style lang="scss">
+.pick-stroke-color .el-color-picker__trigger {
+  width: 100px;
+  height: 40px;
 }
 </style>
