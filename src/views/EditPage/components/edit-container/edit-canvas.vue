@@ -114,8 +114,8 @@ export default {
       // var _this = this;
       this.canvasObj = new fabric.Canvas("canvas", {
         isDrawingMode: false, //设置是否可以绘制
-        selectable: true, //设置控件是否可以选中拖动
-        selection: true, //整个画板是否被选中
+        selectable: false, //设置控件是否可以选中拖动
+        selection: false, //整个画板是否被选中
         skipTargetFind: true, //整个画板元素不能被选中
         backgroundColor: "#ffffff"
       });

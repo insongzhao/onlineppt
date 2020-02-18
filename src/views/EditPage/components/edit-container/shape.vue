@@ -11,9 +11,10 @@
         <div class="shape-list">
           <div
             class="shape-item"
+            :class="{active: currentIndex===index && currentTitle === data.title}"
             v-for="(item, index) in data.shapeLogo"
             :key="index"
-            @click="chooseType(item.drawType)"
+            @click="chooseType(item.drawType,data.title,index)"
           >
             <img :src="item.iconUrl" />
           </div>
@@ -31,6 +32,8 @@
 export default {
   data() {
     return {
+      currentIndex:-1,
+      currentTitle:'',
       shapeList: [
         {
           title: "线条",
@@ -78,8 +81,11 @@ export default {
     };
   },
   methods: {
-    chooseType(type) {
+    chooseType(type,title,index) {
+      this.currentTitle = title;
+      this.currentIndex = index;
       this.$Bus.$emit("type", type);
+
     }
   }
 };
@@ -121,6 +127,9 @@ export default {
     margin-right: 10px;
     margin-bottom: 5px;
     cursor: pointer;
+  }
+  .active{
+    background-color: #ccc;
   }
 }
 </style>
