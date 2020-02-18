@@ -33,12 +33,12 @@
 export default {
   data() {
     return {
-      isChecked: false,
+      isChecked: true,
       isFillChecked: false,
       defaultColor: "#000000",
       nofillColor: "#ffffff",
       isFill: false, // 是否进行填充
-      unpickColor: false //是否禁用颜色选择器
+      unpickColor: true //是否禁用颜色选择器
     };
   },
   methods: {

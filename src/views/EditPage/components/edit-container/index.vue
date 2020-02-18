@@ -35,6 +35,10 @@
         </div>
       </div>
     </div>
+    <!-- 文本设置 -->
+    <transition name="zoom">
+      <text-style v-show="isShowTextBox"></text-style>
+    </transition>
 
     <!-- 形状 -->
     <transition name="zoom">
@@ -87,6 +91,7 @@ import Fill from "./fill";
 import Theme from "./theme";
 import Rotate from "./rotate";
 import Stroke from "./stroke";
+import TextStyle from "./text-style";
 export default {
   name: "edit-container",
   components: {
@@ -96,7 +101,8 @@ export default {
     Fill,
     Theme,
     Rotate,
-    Stroke
+    Stroke,
+    TextStyle
   },
   data() {
     return {
@@ -106,6 +112,7 @@ export default {
       isShowTheme: false,
       isShowRotate: false,
       isShowStroke: false,
+      isShowTextBox: false,
       iconList: [
         {
           title: "文本",
@@ -115,10 +122,10 @@ export default {
           title: "形状",
           iconUrl: require("@/assets/editPage/shape.png")
         },
-        {
-          title: "对齐",
-          iconUrl: require("@/assets/editPage/align.png")
-        },
+        // {
+        //   title: "对齐",
+        //   iconUrl: require("@/assets/editPage/align.png")
+        // },
         {
           title: "文字",
           iconUrl: require("@/assets/editPage/write.png")
@@ -157,6 +164,7 @@ export default {
       this.isShowTheme = false;
       this.isShowRotate = false;
       this.isShowStroke = false;
+      this.isShowTextBox = false;
     },
     /**下拉框显示 */
     showDetails(id) {
@@ -167,16 +175,19 @@ export default {
         case 1: // 形状
           this.isShowShape = !this.isShowShape;
           break;
-        case 4: // 填充
+        case 2: // 文字设置
+          this.isShowTextBox = !this.isShowTextBox;
+          break;
+        case 3: // 填充
           this.isShowFill = !this.isShowFill;
           break;
-        case 5: // 描边
+        case 4: // 描边
           this.isShowStroke = !this.isShowStroke;
           break;
-        case 6: //旋转
+        case 5: //旋转
           this.isShowRotate = !this.isShowRotate;
           break;
-        case 8: //主题
+        case 6: //主题
           this.isShowTheme = !this.isShowTheme;
           break;
       }
