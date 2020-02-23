@@ -199,11 +199,16 @@ export default {
 
     /**删除之后修改 imgId， 重新渲染右侧画布 */
     modifyImgId(index, listLenth) {
-      // 如果删除的是最后一张
+      // 如果删除的是最后一张, 跳转至上一张
       if (index == listLenth - 1) {
-        this.selcetIndex = 0;
+        this.selcetIndex = index - 1;
+        this.imgId = this.countList[index - 1].id;
+      } else {
+        // 跳转到下一张
+        this.selcetIndex = index;
+        this.imgId = this.countList[index].id;
       }
-
+      this.$Bus.$emit("imgId", this.imgId);
     },
 
     /**插入缩略图 */
@@ -236,4 +241,3 @@ export default {
 <style lang="scss" scope>
 @import "./style/index.scss";
 </style>
-
