@@ -17,13 +17,14 @@
   margin-left: 40px;
   margin-top: 20px;
   display:flex;
-  width: 120px;
+  width: 150px;
   height: 30px;
   justify-content: space-between;
   cursor: pointer;
   .save-prev,
   .return-prev,
-  .recover-prev{
+  .recover-prev,
+  .eraser{
     width: 20px;
     height: 20px;
     line-height: 60px;
@@ -36,6 +37,9 @@
   }
   .recover-prev{
     background: url("~assets/editPage/no-return.png");
+  }
+  .eraser{
+    background: url("~assets/editPage/eraser.png");
   }
 }
 .rename-word{

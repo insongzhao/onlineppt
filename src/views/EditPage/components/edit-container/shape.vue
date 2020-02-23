@@ -93,7 +93,7 @@ export default {
   margin-top: 20px;
 }
 .text {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .box-card {
@@ -103,9 +103,9 @@ export default {
     width: 50px;
     height: 20px;
     font-size: 14px;
-    color: #0ab087;
+    color: #707b8e;
     text-align: left;
-    line-height: 14px;
+    line-height: 12px;
   }
 }
 .shape-list {

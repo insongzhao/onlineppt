@@ -43,11 +43,11 @@
 }
 
 .scroll::-webkit-scrollbar-track-piece {
-  background-color: rgba(255,255,255,1);
+  background-color: #f6f6f6;
 } /* 滚动条的内层滑轨背景颜色 */
 
 .scroll::-webkit-scrollbar-track {
-  background-color: rgba(255,255,255,1);
+  background-color: #f6f6f6;
 } /* 滚动条的外层滑轨背景颜色 */
 
 .scroll::-webkit-scrollbar-thumb {
@@ -57,7 +57,7 @@
 } /* 滚动条的内层滑块颜色 */
 
 .scroll::-webkit-scrollbar-button {
-  background-color: #fff;
+  // background-color: #fff;
   display: none;
 } /* 滑轨两头的监听按钮颜色 */
 
@@ -81,5 +81,52 @@ button {
   outline: none;
   border: none;
   font-size: 12px;
+}
+
+.toast-box {
+  position: absolute;
+  width: 350px;
+  height: 50px;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toast-box-icon:before {
+  position: absolute;
+  margin-top: 17px;
+  margin-left: 20px;
+  width: 16px;
+  height: 16px;
+
+  display: inline-block;
+  content: "";
+}
+.toast-box .el-message__content {
+  line-height: 50px;
+  font-size: 16px;
+  text-align: center;
+  /*color: #fff;*/
+}
+.success-toast {
+  background-color: #7dc554;
+}
+.success-toast .el-message__content {
+  color: #ffffff;
+}
+
+.success-toast-icon:before {
+  /* background-image: url("../../static/images/login/toast-success.png"); */
+}
+
+.error-toast {
+  background-color: #fef0f0;
+}
+.error-toast .el-message__content {
+  color: #f56d6d;
+}
+
+.error-toast-icon:before {
+  /* background-image: url("../../static/images/login/toast-error.png"); */
 }
 

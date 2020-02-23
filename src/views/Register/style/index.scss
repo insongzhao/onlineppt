@@ -10,18 +10,17 @@
 
 .register-container {
   position: absolute;
-  width: 810px;
+  width: 808px;
   height: 454px;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid blue;
 
   .register-container_left {
     float: left;
     width: 468px;
     height: 454px;
-    border: 1px solid black;
+    background: url("~assets/editPage/registertheme.png");
   }
 
   .register-container_right {
@@ -30,7 +29,6 @@
     width: 340px;
     height: 454px;
     padding: 0 35px;
-    border: 1px solid red;
     background-color: #ffffff;
 
     .register-form-header {
@@ -136,7 +134,7 @@
     height: 60px;
     left: 0;
     bottom: 0;
-    border: 1px solid rgb(235, 236, 241);
+    border-top: 1px solid rgb(235, 236, 241);
 
     .user-register-text {
       font-size: 12px;

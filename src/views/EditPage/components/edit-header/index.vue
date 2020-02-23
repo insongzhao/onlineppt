@@ -6,9 +6,10 @@
       <div class="save-prev" title="保存"></div>
       <div class="return-prev" title="撤销"></div>
       <div class="recover-prev" title="恢复"></div>
+      <div class="eraser" title="擦除" @click="removeObj"></div>
     </div>
     <div class="rename-word">
-      <el-input placeholder="未命名的文档"></el-input>
+      <el-input placeholder="未命名的文档" v-model="defaultInput"></el-input>
     </div>
     <div class="func-btns">
       <div class="delete-word common" @click="delWork">删除</div>
@@ -19,15 +20,28 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "edit-header",
+  data() {
+    return {
+      defaultInput: ""
+    }
+  },
+  computed: {
+    ...mapState(["canvasInfo"])
+  },
   methods: {
     delWork() {
       this.$emit("delWork");
     },
     returnHome() {
       this.$router.push({ path: "/" });
-    }
+    },
+    /**橡皮擦除 */
+    removeObj() {
+      
+    },
   }
 };
 </script>

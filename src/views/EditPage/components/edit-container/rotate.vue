@@ -80,14 +80,68 @@ export default {
   justify-content: space-between;
   width: 100%;
   .item {
-    width: 20px;
+    width: 22px;
     height: 20px;
-    border: 1px solid black;
     cursor: pointer;
+  }
+  .clockwise-btn {
+    background: url("~assets/editPage/rotate/rotate-right.png") no-repeat;
+    &:hover {
+      background: url("~assets/editPage/rotate/rotate-right_h.png") no-repeat;
+    }
+  }
+  .anticlockwise-btn {
+    background: url("~assets/editPage/rotate/rotate-left.png") no-repeat;
+    &:hover {
+      background: url("~assets/editPage/rotate/rotate-left_h.png") no-repeat;
+    }
+  }
+  .scaleX-btn {
+    background: url("~assets/editPage/rotate/scaleX.png") no-repeat;
+    &:hover {
+      background: url("~assets/editPage/rotate/scaleX_h.png") no-repeat;
+    }
+  }
+  .scaleY-btn {
+    background: url("~assets/editPage/rotate/scaleY.png") no-repeat;
+    &:hover {
+      background: url("~assets/editPage/rotate/scaleY_h.png") no-repeat;
+    }
   }
 }
 .count-num-btn {
   margin-left: -18px;
   margin-top: 10px;
+}
+</style>
+<style lang="scss">
+.count-num-btn {
+  .el-input-number {
+    position: absolute;
+    width: 165px !important;
+    right: 17px;
+    line-height: 30px;
+    &:hover {
+      .el-input__inner {
+        border-color: #0ab087 !important;
+      }
+    }
+  }
+  .el-input__inner {
+    width: 165px !important;
+    padding-left: 0px !important;
+    padding-right: 40px !important;
+    &:hover {
+      border-color: #0ab087;
+    }
+  }
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    line-height: 14px !important;
+    background-color: #d5e4de;
+    &:hover {
+      color: #0ab087;
+    }
+  }
 }
 </style>

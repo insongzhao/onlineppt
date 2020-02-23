@@ -2,7 +2,6 @@
 <template>
   <div class="edit-box">
     <div class="edit-box-content" ref="editCanvas">
-      <!-- <canvas id="edit-canvas" style="width:100%; height:100%"></canvas> -->
       <canvas id="canvas"></canvas>
     </div>
   </div>
@@ -10,8 +9,10 @@
 
 <script>
 import { fabric } from "fabric";
+import { mapState } from "vuex";
 export default {
   name: "edit-canvas",
+  props: ["imgId"],
   data() {
     return {
       canvasWidth: 0,
@@ -56,12 +57,18 @@ export default {
         initialNum: 0,
         isStart: false
       },
-      isInitialStatus: false // 是否为初始状态
+      isInitialStatus: false, // 是否为初始状态
+      titleType: "",
+      textbox: null,
+      strokeType: "",
+      strokeColor: "#000000",
+      thickness: "", // 描边粗细
+      cIdArr: []
     };
   },
   mounted() {
     this.getPara();
-    this.initCanvas();
+    this.initCanvas(this.TIndex);
     this.$Bus.$on("type", e => {
       this.drawType = e;
     });
@@ -81,6 +88,24 @@ export default {
     this.$Bus.$on("clearMode", e => {
       this.clearMode = e;
     });
+    this.$Bus.$on("titleType", e => {
+      this.titleType = e;
+    });
+    this.$Bus.$on("strokeType", e => {
+      this.strokeType = e;
+    });
+    this.$Bus.$on("strokeColor", e => {
+      this.strokeColor = e;
+    });
+    this.$Bus.$on("strokeColor", e => {
+      this.strokeColor = e;
+    });
+    this.$Bus.$on("thickness", e => {
+      this.thickness = e;
+    });
+  },
+  computed: {
+    ...mapState(["canvasInfo"])
   },
   watch: {
     selectedColor: {
@@ -101,12 +126,22 @@ export default {
         this.importBgColor(this.themeColor);
       }
     },
-    clearMode: {
+    strokeType: {
       deep: true,
       handler: function() {
-        console.log("==========");
-        this.clearCanvas();
-        this.getCanvas(this.currentState);
+        this.modifyStrokeType(this.strokeType);
+      }
+    },
+    strokeColor: {
+      deep: true,
+      handler: function() {
+        this.modifyStrokeColor(this.strokeColor);
+      }
+    },
+    thickness: {
+      deep: true,
+      handler: function() {
+        this.modifythickness(this.thickness);
       }
     }
   },
@@ -118,19 +153,20 @@ export default {
     },
 
     resetObj() {
-      this.canvasObj.isDrawingMode = false;
-      this.canvasObj.selectable = true;
-      this.canvasObj.selection = true;
-      this.canvasObj.skipTargetFind = true;
+      // this.canvasObj.isDrawingMode = false;
+      // this.canvasObj.selectable = true;
+      // this.canvasObj.selection = true;
+      // this.canvasObj.skipTargetFind = true;
     },
     // 初始化
-    initCanvas() {
+    initCanvas(thumIndex) {
+      console.log("thumIndex", thumIndex);
       // var _this = this;
       this.canvasObj = new fabric.Canvas("canvas", {
         isDrawingMode: false, //设置是否可以绘制
         selectable: true, //设置控件是否可以选中拖动
         selection: true, //整个画板是否被选中
-        skipTargetFind: true, //整个画板元素不能被选中
+        skipTargetFind: false, //整个画板元素不能被选中
         backgroundColor: "#ffffff"
       });
       this.canvasObj.setWidth(this.canvasWidth); //设置画布的宽度
@@ -160,8 +196,8 @@ export default {
           this.canvasObj.selection = true;
 
           this.doDrawing = false; //停止绘制
-          this.getCanvasState();
-          this.canvastoImg();
+          this.getCanvasState(); // 画布状态记录
+          this.canvastoImg(); // 画布转换成图片
         },
         "mouse:move": o => {
           //鼠标在移动中的事件
@@ -174,6 +210,7 @@ export default {
           this.mouseTo.x = o.pointer.x;
           this.mouseTo.y = o.pointer.y;
           this.drawing(this.drawType);
+          // this.drawTitle(this.titleType);
         },
         "object:move": e => {
           e.target.opacity = 0.5; //你绘画在画布上对象，移动它们的时候，让它们的透明度变成0.5
@@ -181,6 +218,7 @@ export default {
         "selection:created": e => {
           console.log("select");
           this.selectedObj = e.target;
+          this.canvasInfo.selectedCanvasObj = this.selectedObj;
         },
         "object:added": e => {
           console.log("add", e);
@@ -188,80 +226,9 @@ export default {
         "object:modified": e => {
           // e.target.opacity = 1;
           console.log("修改++++++++", e.target);
-        },
-        "after:render": e => {
-          console.log("画布渲染之后", e);
         }
       });
-    },
-
-    /**旋转对象*/
-    rotateObj(rotateAngle) {
-      const currAngle = this.selectedObj.angle; // 当前图层的角度
-      this.lastAngel =
-        currAngle === 360 ? rotateAngle : currAngle + rotateAngle;
-      this.selectedObj.rotate(this.lastAngel);
-      this.canvasObj.renderAll();
-      this.$Bus.$emit("lastAngel", this.lastAngel);
-    },
-
-    /**翻转对象 水平镜像*/
-    scaleXObj() {
-      this.selectedObj.set({
-        scaleX: -this.selectedObj.scaleX
-      });
-      this.canvasObj.renderAll();
-    },
-
-    /**翻转对象 垂直镜像 */
-    scaleYObj() {
-      this.selectedObj.set({
-        scaleY: -this.selectedObj.scaleY
-      });
-      this.canvasObj.renderAll();
-    },
-
-    /**自定义旋转 */
-    customizeRotate(angelNum) {
-      console.log("angelNum", angelNum);
-      this.selectedObj.rotate(angelNum);
-      this.canvasObj.renderAll();
-    },
-    /**填充颜色 */
-    fillColor(color) {
-      this.selectedObj.set("fill", color);
-      this.selectedObj.set("stroke", "#000000");
-      // 如果进行填充，则进行描边
-      if (this.isFill) {
-        this.selectedObj.set("stroke", color);
-      }
-      console.log(this.selectedObj);
-      this.canvasObj.renderAll();
-    },
-
-    /**画布图片背景 */
-    importBgImg(imgUrl) {
-      console.log("设置画布背景图");
-      fabric.Image.fromURL(imgUrl, img => {
-        img.set({
-          // 通过scale来设置图片大小，这里设置和画布一样大
-          scaleX: this.canvasWidth / img.width,
-          scaleY: this.canvasHeight / img.height
-        });
-        // 设置背景
-        this.canvasObj.setBackgroundImage(
-          img,
-          this.canvasObj.renderAll.bind(this.canvasObj)
-        );
-        this.canvasObj.renderAll();
-      });
-    },
-
-    /**画布纯色背景 */
-    importBgColor(color) {
-      console.log("color", color);
-      this.canvasObj.set("backgroundColor", color);
-      this.canvasObj.renderAll();
+      this.canvasInfo.canvasObject = this.canvasObj;
     },
 
     /**画布元素绘制 */
@@ -269,13 +236,22 @@ export default {
       console.log("type", type);
       var left = this.mouseFrom.x,
         top = this.mouseFrom.y;
+      var width = this.mouseTo.x - left;
       var radius =
         Math.sqrt(
           (this.mouseTo.x - left) * (this.mouseTo.x - left) +
             (this.mouseTo.y - top) * (this.mouseTo.y - top)
         ) / 2;
       if (this.drawingObject) {
+        console.log("=================");
         this.canvasObj.remove(this.drawingObject);
+      }
+
+      if (this.textbox) {
+        console.log("+++++++++++++");
+        //退出文本编辑状态
+        this.textbox.exitEditing();
+        this.textbox = null;
       }
 
       switch (type) {
@@ -394,19 +370,20 @@ export default {
             strokeWidth: this.drawWidth
           });
           break;
-        case "big-title": // 大标题
-          var textbox = new fabric.Textbox("", {
+        case 0: // 大标题
+          this.textbox = new fabric.Textbox("", {
             left: left,
             top: top,
-            width: 200,
+            width: width,
             fontSize: 32,
             borderColor: "#2c2c2c",
             fill: this.color,
-            hasControls: true
+            hasControls: true,
+            breakWords: true
           });
-          this.canvasObj.add(textbox);
-          textbox.enterEditing();
-          textbox.hiddenTextarea.focus();
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
           break;
       }
       if (this.canvasObject) {
@@ -415,6 +392,41 @@ export default {
         this.drawingObject = this.canvasObject;
       }
     },
+
+    /**绘制标题 */
+    // drawTitle(type) {
+    //   console.log("title", type);
+    //   var left = this.mouseFrom.x;
+    //   var top = this.mouseFrom.y;
+    //   var width = this.mouseTo.x - left;
+    //   // var height = this.this.mouseTo.y - this.mouseFrom.y;
+    //   if (this.drawingObject) {
+    //     this.canvasObj.remove(this.drawingObject);
+    //   }
+    //   switch (type) {
+    //     case 0: {
+    //       console.log("big-title");
+    //        var textbox = new fabric.Textbox("", {
+    //         left: left,
+    //         top: top,
+    //         width: width,
+    //         fontSize: 32,
+    //         borderColor: "#2c2c2c",
+    //         fill: this.color,
+    //         hasControls: true
+    //       });
+    //       break;
+    //     }
+    //   }
+    //     // this.canvasObj.add(textbox);
+    //     //   textbox.enterEditing();
+    //     //   textbox.hiddenTextarea.focus();
+    //   // if (this.canvasObject) {
+    //   //   // canvasObject.index = getCanvasObjectIndex();
+    //   //   this.canvasObj.add(this.canvasObject); //.setActiveObject(canvasObject)
+    //   //   this.drawingObject = this.canvasObject;
+    //   // }
+    // },
 
     /**绘制箭头方法 */
     drawArrow(fromX, fromY, toX, toY, theta, headlen) {
@@ -442,17 +454,163 @@ export default {
       return path;
     },
 
-    /**画布状态记录 */
-    getCanvasState() {
-      this.currentState = JSON.stringify(this.canvasObj.toJSON());
-      console.log("当前状态", this.currentState);
-      this.$Bus.$emit("currentState", this.currentState);
+    /**旋转对象*/
+    rotateObj(rotateAngle) {
+      const currAngle = this.selectedObj.angle; // 当前图层的角度
+      this.lastAngel =
+        currAngle === 360 ? rotateAngle : currAngle + rotateAngle;
+      this.selectedObj.rotate(this.lastAngel);
+      this.canvasObj.renderAll();
+      this.$Bus.$emit("lastAngel", this.lastAngel);
     },
 
-    /**画布转成 svg */
-    canvastoSvg() {
-      this.svg = this.canvasObj.toSVG();
-      console.log(this.svg);
+    /**修改描边类型 */
+    modifyStrokeType(strokeType) {
+      this.selectedObj.set("stroke", this.strokeColor);
+      switch (strokeType) {
+        case 1: {
+          // 无描边
+          this.selectedObj.set("stroke", "");
+          break;
+        }
+        case 2: {
+          // 直线
+          this.selectedObj.set("strokeDashArray", "");
+          break;
+        }
+        case 3: {
+          // 密集虚线
+          this.selectedObj.set("strokeDashArray", [6, 4]);
+          break;
+        }
+        case 4: {
+          // 分散虚线
+          this.selectedObj.set("strokeDashArray", [6, 8]);
+          break;
+        }
+      }
+      this.canvasObj.renderAll();
+    },
+
+    /**修改描边颜色 */
+    modifyStrokeColor(strokeColor) {
+      this.selectedObj.set("stroke", strokeColor);
+      this.canvasObj.renderAll();
+    },
+
+    /**修改描边粗细 */
+    modifythickness(thickness) {
+      this.selectedObj.set("strokeWidth", thickness);
+      this.canvasObj.renderAll();
+    },
+
+    /**翻转对象 水平镜像*/
+    scaleXObj() {
+      this.selectedObj.set({
+        scaleX: -this.selectedObj.scaleX
+      });
+      this.canvasObj.renderAll();
+    },
+
+    /**翻转对象 垂直镜像 */
+    scaleYObj() {
+      this.selectedObj.set({
+        scaleY: -this.selectedObj.scaleY
+      });
+      this.canvasObj.renderAll();
+    },
+
+    /**自定义旋转 */
+    customizeRotate(angelNum) {
+      console.log("angelNum", angelNum);
+      this.selectedObj.rotate(angelNum);
+      this.canvasObj.renderAll();
+    },
+    /**填充颜色 */
+    fillColor(color) {
+      this.selectedObj.set("fill", color);
+      this.selectedObj.set("stroke", this.strokeColor);
+      console.log(this.selectedObj);
+      this.canvasObj.renderAll();
+    },
+
+    /**画布图片背景 */
+    importBgImg(imgUrl) {
+      console.log("设置画布背景图");
+      fabric.Image.fromURL(imgUrl, img => {
+        img.set({
+          // 通过scale来设置图片大小，这里设置和画布一样大
+          scaleX: this.canvasWidth / img.width,
+          scaleY: this.canvasHeight / img.height
+        });
+        // 设置背景
+        this.canvasObj.setBackgroundImage(
+          img,
+          this.canvasObj.renderAll.bind(this.canvasObj)
+        );
+        this.canvasObj.renderAll();
+      });
+    },
+
+    /**画布纯色背景 */
+    importBgColor(color) {
+      console.log("color", color);
+      this.canvasObj.set("backgroundColor", color);
+      this.canvasObj.renderAll();
+    },
+
+    /**画布状态记录 暂且鼠标抬起*/
+    getCanvasState() {
+      this.currentState = JSON.stringify(this.canvasObj.toJSON());
+      // 将当前状态放进全局 canvasArr 中
+      var canvasState = {};
+
+      if (this.canvasInfo.canvasArr.length > 0) {
+        // 如果存在保存的canvas，则进行替换
+        for (var i = 0; i < this.canvasInfo.canvasArr.length; i++) {
+          if (this.canvasInfo.canvasArr[i].cId == this.imgId) {
+            this.canvasInfo.canvasArr[i].obj = this.currentState;
+          }
+        }
+        // 没有保存过 cId 为 imgId 的画布
+        if (this.cIdArr.indexOf(this.imgId) == -1) {
+          canvasState.cId = this.imgId;
+          canvasState.obj = this.currentState;
+          this.canvasInfo.canvasArr.push(canvasState);
+        }
+      } else {
+        // canvasArr 为空时直接保存
+        canvasState.cId = this.imgId;
+        canvasState.obj = this.currentState;
+        this.canvasInfo.canvasArr.push(canvasState);
+      }
+      this.canvasInfo.canvasArr.forEach(item => {
+        this.cIdArr.push(item.cId);
+      });
+
+      console.log("加油", this.canvasInfo.canvasArr);
+    },
+
+    /**渲染画布状态 */
+    getCanvas(id, lastCurrent) {
+      console.log("下标", id);
+      console.log("lastCurrent", lastCurrent);
+
+      var canvasCurrent = "";
+      // 获取该 id 的画布元素
+      if (lastCurrent.length > 0) {
+        // 遍历数组，如果item.cId  等于画布 id，则渲染
+        for (var i = 0; i < lastCurrent.length; i++) {
+          if (lastCurrent[i].cId == id) {
+            canvasCurrent = lastCurrent[i].obj;
+          }
+        }
+
+        // 开始渲染
+        this.canvasObj.loadFromJSON(canvasCurrent, () => {
+          this.canvasObj.renderAll();
+        });
+      }
     },
 
     /**画布导出成图片 */
@@ -469,12 +627,11 @@ export default {
       this.canvasObj.clear();
     },
 
-    /**渲染画布状态 */
-    getCanvas(lastCurrent) {
-      console.log("zhuangtai+++++++++", lastCurrent);
-      this.canvasObj.loadFromJSON(lastCurrent, () => {
-        this.canvasObj.renderAll();
-      });
+    /**移除单个元素 */
+    removeObj() {
+      console.log("移除元素", this.canvasObj.getActiveObject());
+      this.canvasObj.remove(this.canvasObj.getActiveObject());
+      console.log("dd" + this.canvasObj);
     },
 
     /**记录每步操作,用户撤销和回退操作 */
@@ -519,11 +676,11 @@ export default {
   width: 100%;
   height: calc(100% - 40px);
   padding: 25px 50px;
-  border: 1px solid green;
 }
 .edit-box-content {
   width: 100%;
   height: 100%;
-  border: 1px solid black;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+  z-index: 9;
 }
 </style>

@@ -11,7 +11,7 @@
       <div class="img-theme" @click="chooseImg">图片主题</div>
       <div class="color-theme">
         <span>颜色主题</span>
-        <div>
+        <div class="color-picker">
           <el-color-picker
             v-model="defaultColor"
             @change="changeColor"
@@ -60,28 +60,51 @@ export default {
 <style lang="scss" scope>
 .theme-box {
   position: absolute;
-  left: 350px;
+  left: 630px;
   z-index: 999;
 }
 .theme-card {
-  width: 200px;
-  height: 200px;
+  width: 120px;
+  height: 150px;
 }
 .img-theme {
-  width: 100px;
+  width: 158px;
   height: 30px;
+  font-size: 12px;
+  color: #707b8e;
   text-align: left;
-  border: 1px solid black;
+  line-height: 30px;
   cursor: pointer;
+  background: url("~assets/editPage/picture.png") no-repeat 60px 5px;
+  &:hover {
+    background: url("~assets/editPage/picture_h.png") no-repeat 60px 5px;
+  }
 }
 .color-theme {
   width: 158px;
   height: 40px;
-  border: 1px solid black;
   span {
     float: left;
-    font-size: 16px;
+    font-size: 12px;
+    color: #707b8e;
     line-height: 40px;
+  }
+}
+</style>
+<style lang="scss">
+.color-picker {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-top: 9px;
+  margin-left: -63px;
+  .el-color-picker {
+    height: 20px;
+    .el-color-picker__trigger {
+      width: 20px;
+      height: 20px;
+      padding: 0px;
+    }
   }
 }
 </style>

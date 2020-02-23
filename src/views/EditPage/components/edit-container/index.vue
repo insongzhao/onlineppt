@@ -13,21 +13,21 @@
           <img :src="item.iconUrl" />
         </div>
         <div
-          class="action-theme icon set-btn"
+          class="action-theme icon set-btn noselect"
           title="主题"
-          @click="showDetails(8)"
+          @click="showDetails(6)"
         >
           主题
         </div>
         <div
-          class="action-fade icon set-btn"
+          class="action-fade icon set-btn noselect"
           title="过渡效果"
-          @click="showDetails(9)"
+          @click="showDetails(7)"
         >
           过渡效果
         </div>
         <div
-          class="action-clear icon set-btn"
+          class="action-clear icon set-btn noselect"
           title="清空画布"
           @click="clearCanvas"
         >
@@ -79,7 +79,7 @@
     </transition>
 
     <!-- canvas 编辑模块 -->
-    <edit-canvas ref="editCanvas" @currentState="getState"></edit-canvas>
+    <edit-canvas ref="editCanvas" @currentState="getState" :imgId="imgId"></edit-canvas>
   </div>
 </template>
 
@@ -92,6 +92,7 @@ import Theme from "./theme";
 import Rotate from "./rotate";
 import Stroke from "./stroke";
 import TextStyle from "./text-style";
+import { mapState } from "vuex";
 export default {
   name: "edit-container",
   components: {
@@ -143,11 +144,37 @@ export default {
           iconUrl: require("@/assets/editPage/rotate.png")
         }
       ],
-      currentState: "" //当前画布状态
+      currentState: "", //当前画布状态
+      TIndex: 0,
+      imgId: ""
     };
   },
   mounted() {
     // this.initPage();
+    // this.$Bus.$on("TIndex", e => {
+    //   this.TIndex = e;
+    // });
+    this.$Bus.$on("imgId", e => {
+      this.imgId = e;
+      console.log("imgId", this.imgId);
+    });
+  },
+  watch: {
+    // TIndex: {
+    //   deep: true,
+    //   handler: function() {
+    //     this.initRightCanvas(this.TIndex, this.canvasInfo.canvasArr);
+    //   }
+    // }
+    imgId: {
+      deep: true,
+      handler: function() {
+        this.initRightCanvas(this.imgId, this.canvasInfo.canvasArr);
+      }
+    }
+  },
+  computed:{
+    ...mapState(["canvasInfo"])
   },
   methods: {
     /**点击其他区域收起下拉框 */
@@ -188,6 +215,7 @@ export default {
           this.isShowRotate = !this.isShowRotate;
           break;
         case 6: //主题
+          console.log("zhuti");
           this.isShowTheme = !this.isShowTheme;
           break;
       }
@@ -202,6 +230,7 @@ export default {
     /**清空画布 */
     clearCanvas() {
       this.$refs.editCanvas.clearCanvas();
+      // this.$refs.editCanvas.removeObj();
     },
 
     /**顺时针旋转 */
@@ -226,6 +255,15 @@ export default {
 
     customizeRotate(angelNum) {
       this.$refs.editCanvas.customizeRotate(angelNum);
+    },
+
+    /**清空并重新渲染右侧画布 */
+    initRightCanvas(id, lastCurrent) {
+      console.log("right");
+      console.log(lastCurrent);
+      this.$refs.editCanvas.clearCanvas();
+      // 渲染右侧画布
+      this.$refs.editCanvas.getCanvas(id, lastCurrent);
     }
   }
 };

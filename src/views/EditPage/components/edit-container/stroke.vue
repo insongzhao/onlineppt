@@ -68,7 +68,7 @@
       <div class="pick-stroke-color">
         <el-color-picker
           v-model="defaultColor"
-          @change="strokeColor"
+          @change="changeColor"
         ></el-color-picker>
       </div>
     </el-card>
@@ -118,6 +118,7 @@ export default {
     showStrokeStyle(id) {
       this.initPara();
       console.log("id", id);
+      this.$Bus.$emit("strokeType", id);
       switch (id) {
         case 1: {
           this.isShowTitle = true;
@@ -146,6 +147,11 @@ export default {
     /**选择描边的粗细 */
     chooseThick(item) {
       console.log("thick", item);
+      this.$Bus.$emit("thickness", item);
+    },
+
+    changeColor() {
+      this.$Bus.$emit("strokeColor", this.defaultColor);
     }
   }
 };
@@ -207,8 +213,8 @@ export default {
   background: url("~assets/editPage/stroke/selected_n.png") no-repeat;
   cursor: pointer;
 }
-.selected,
-.active {
+.select-btn.selected,
+.select-btn.active {
   background: url("~assets/editPage/stroke/selected_s.png") no-repeat;
 }
 .select-menu {

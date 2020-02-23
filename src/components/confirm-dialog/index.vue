@@ -49,7 +49,7 @@ export default {
   width: 440px;
   height: 250px;
   left: 50%;
-  top: 50%;
+  top: 45%;
   transform: translate(-50%, -50%);
   background: #ffffff;
   border-radius: 4px;
@@ -61,6 +61,7 @@ export default {
   float: right;
   margin: 10px 10px 0 0;
   background: url("~assets/editPage/closeX.png") center no-repeat;
+  cursor: pointer;
 }
 
 .dialog__header {

@@ -69,11 +69,11 @@ export default {
 <style lang="scss" scope>
 .edit-canvas-box {
   position: absolute;
-  left: 470px;
+  left: 440px;
   z-index: 999;
 }
 .box-card {
-  width: 200px;
+  width: 150px;
   height: 200px;
 }
 .check-box {
@@ -83,7 +83,7 @@ export default {
   margin: 0 auto;
   margin-bottom: 10px;
   color: #707070;
-  font-size: 16px;
+  font-size: 12px;
   line-height: 22px;
   &:hover {
     color: #0ab087;

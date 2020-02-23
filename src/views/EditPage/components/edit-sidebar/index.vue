@@ -1,30 +1,65 @@
 <!-- 编辑页面侧边栏-->
 <template>
-  <div class="sidebar-page">
-    <div class="create-btn noselect" @click="addCanvas()">新建幻灯片</div>
-    <div class="side-body">
-      <div class="side-content">
-        <div class="side-ppt-list scroll">
-          <!-- 每张ppt缩略图 -->
-          <div
-            class="side-ppt-item"
-            @click="renderCanvas(index)"
-            v-for="(item, index) in countList"
-            :key="index"
-            :class="{ select: selcetIndex == index }"
-          >
-            <div class="item-btns">
-              <div class="item-delete" @click.stop="delCanvas(index)"></div>
-              <div class="item-create"></div>
+  <div>
+    <div class="sidebar-page">
+      <div class="create-btn noselect" @click="addCanvas()">新建幻灯片</div>
+      <div class="side-body">
+        <div class="side-content">
+          <div class="side-ppt-list scroll">
+            <!-- 每张ppt缩略图 -->
+            <div
+              class="side-ppt-item"
+              @click="renderCanvas(index, item.id)"
+              v-for="(item, index) in countList"
+              :key="item.id"
+              :class="{ select: selcetIndex == index }"
+            >
+              <img :src="getThumImg(item.id)" />
+              <div class="item-btns" v-show="selcetIndex == index">
+                <div class="item-delete" @click.stop="delCanvas(index)"></div>
+                <div class="item-create" @click.stop="addSideImg(index)"></div>
+              </div>
             </div>
-            <canvas id="side-canvas"></canvas>
+          </div>
+          <div class="side-footer">
+            <div class="page_size list">
+              {{ selcetIndex + 1 }} / {{ this.countList.length }}
+            </div>
+            <div class="change_show_type">
+              <div class="show_list" title="列表排列"></div>
+              <div class="show_repeat" title="平铺排列" @click="repeatList"></div>
+            </div>
           </div>
         </div>
-        <div class="side-footer">
-          <div class="page_size">3/3</div>
-          <div class="change_show_type">
-            <div class="show_list" title="列表排列"></div>
-            <div class="show_repeat" title="平铺排列"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-page_repeat" v-show="isRepeat">
+      <div class="repeat-header">
+        <div class="page_size repeat">
+          {{ selcetIndex + 1 }} / {{ this.countList.length }}
+        </div>
+        <div class="close-repeat" @click="isRepeat = false"></div>
+      </div>
+      <div class="repeat-content scroll">
+        <div class="repeat-list">
+          <div class="add-side item" @click="addCanvas()">
+            <div class="repeat-add"></div>
+            <span>新建幻灯片</span>
+          </div>
+          <!-- 每张ppt缩略图 -->
+          <div
+            class="repeat-ppt-item item"
+            @click="renderCanvas(index, item.id)"
+            v-for="(item, index) in countList"
+            :key="item.id"
+            :class="{ select: selcetIndex == index }"
+          >
+            <img :src="getThumImg(item.id)" />
+            <div class="item-btns" v-show="selcetIndex == index">
+              <div class="item-delete" @click.stop="delCanvas(index)"></div>
+              <div class="item-create" @click.stop="addSideImg(index)"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -33,23 +68,28 @@
 </template>
 
 <script>
-import { fabric } from "fabric";
+import { mapState } from "vuex";
 export default {
+  name: "edit-sidebar",
+  // components: {
+  //   CanvasCard
+  // },
   data() {
     return {
-      countList: [{}],
+      countList: [{ id: this.$utils.get_Id() }],
       canvasWidth: 250,
       canvasHeight: 150,
       currentState: "", // 画布状态
-      canvasImg: "",
-      clearMode: false, // 是否清空画布
+      canvasImg: "", // 画布缩略图
       selectedMode: false, // 侧边栏选中状态
-      selcetIndex:0
+      selcetIndex: 0,
+      indexArr: [],
+      isRepeat: false, // 是否平铺排列
+      imgId: "",
+      tIdArr: []
     };
   },
   mounted() {
-    this.initCanvas();
-
     this.$Bus.$on("currentState", e => {
       this.currentState = e;
       console.log("current", this.currentState);
@@ -60,80 +100,135 @@ export default {
     });
   },
   watch: {
-    // currentState: {
-    //   deep: true,
-    //   handler: function() {
-    //     this.loadCanvasForm(this.currentState);
-    //   }
-    // },
     canvasImg: {
       deep: true,
       handler: function() {
-        this.loadCanvasThumb(this.canvasImg);
+        this.saveImgInfo(this.canvasImg);
       }
     }
   },
+  computed: {
+    ...mapState(["canvasInfo"])
+  },
   methods: {
-    /**初始化 canvas */
-    initCanvas() {
-      this.sideCanvasObj = new fabric.Canvas("side-canvas", {
-        isDrawingMode: false, //设置是否可以绘制
-        selectable: false, //设置控件是否可以选中拖动
-        selection: false, //整个画板是否被选中
-        skipTargetFind: true, //整个画板元素不能被选中
-        backgroundColor: "#ffffff",
-        defaultCursor: "pointer"
-      });
-      this.sideCanvasObj.setWidth(this.canvasWidth); //设置画布的宽度
-      this.sideCanvasObj.setHeight(this.canvasHeight); //设置画布的高度
-    },
-
     /**添加空白幻灯片 */
     addCanvas() {
-      this.countList.push({});
-      this.initCanvas();
+      this.countList.push({ id: this.$utils.get_Id() });
+      // this.$store.commit("addCanvas");
     },
 
-    /**加载画布信息 */
-    // loadCanvasForm(lastState) {
-    //   console.log("侧边栏");
+    /**保存画布缩略图 当右侧画布 canvasImg 发生变化时*/
+    saveImgInfo(canvasImg) {
+      var imgItem = {};
 
-    //   this.sideCanvasObj.loadFromJSON(lastState, () => {
-    //     this.sideCanvasObj.renderAll();
-    //     console.log(this.sideCanvasObj.toJSON());
-    //   });
-    // },
-
-    /**画布缩略图 */
-    loadCanvasThumb(imgUrl) {
-      this.clearMode = false;
-      this.$Bus.$emit("clearMode", this.clearMode);
-      fabric.Image.fromURL(imgUrl, img => {
-        img.set({
-          // 通过scale来设置图片大小，这里设置和画布一样大
-          scaleX: this.canvasWidth / img.width,
-          scaleY: this.canvasHeight / img.height
-        });
-        // 设置背景
-        this.sideCanvasObj.setBackgroundImage(
-          img,
-          this.sideCanvasObj.renderAll.bind(this.sideCanvasObj)
-        );
-        this.sideCanvasObj.renderAll();
+      // 将图片存入 canvasThum
+      if (this.canvasInfo.canvasThum.length > 0) {
+        // 如果存在保存的canvas，则进行替换
+        for (var i = 0; i < this.canvasInfo.canvasThum.length; i++) {
+          if (this.canvasInfo.canvasThum[i].tId == this.imgId) {
+            this.canvasInfo.canvasThum[i].img = canvasImg;
+          }
+        }
+        // 没有保存过 tId 为 imgId 的画布
+        if (this.tIdArr.indexOf(this.imgId) == -1) {
+          imgItem.tId = this.imgId;
+          imgItem.img = canvasImg;
+          this.canvasInfo.canvasThum.push(imgItem);
+        }
+      } else {
+        // canvasThum 为空时
+        imgItem.tId = this.imgId;
+        imgItem.img = canvasImg;
+        this.canvasInfo.canvasThum.push(imgItem);
+      }
+      this.canvasInfo.canvasThum.forEach(item => {
+        this.tIdArr.push(item.tId);
       });
+
+      console.log("success!", this.canvasInfo.canvasThum);
+      console.log("aoligei", this.tIdArr);
     },
 
-    /**重绘编辑页的 canvas 画布 */
-    renderCanvas(index) {
+    /**点击缩略图 */
+    renderCanvas(index, imgId) {
       this.selcetIndex = index;
-      this.clearMode = true; // 清空画布
-      this.$Bus.$emit("clearMode", this.clearMode);
-      console.log("重绘");
+      this.imgId = imgId;
+      this.$Bus.$emit("imgId", imgId);
     },
 
-    /**删除幻灯片 */
+    /**渲染侧边栏缩略图 根据缩略图 id 来渲染 */
+    getThumImg(id) {
+      if (this.canvasInfo.canvasThum.length > 0) {
+        for (var i = 0; i < this.canvasInfo.canvasThum.length; i++) {
+          if (this.canvasInfo.canvasThum[i].tId == id) {
+            return this.canvasInfo.canvasThum[i].img;
+          }
+        }
+      }
+    },
+
+    /**删除缩略图 */
     delCanvas(index) {
+      if (this.countList.length == 1) {
+        this.tipBox("已经是最后一张啦！", "error");
+        return false;
+      }
+      var listLenth = this.countList.length;
+      // 删除缩略图
       this.countList.splice(index, 1);
+      console.log("hou", this.countList);
+
+      // 删除缩略图数据
+      if (this.canvasInfo.canvasThum.length > 0) {
+        for (var i = 0; i < this.canvasInfo.canvasThum.length; i++) {
+          if (this.canvasInfo.canvasThum[i].tId == this.imgId) {
+            this.canvasInfo.canvasThum.splice(i, 1);
+          }
+        }
+      }
+
+      // 删除画布数据
+      for (var j = 0; j < this.canvasInfo.canvasArr.length; j++) {
+        if (this.canvasInfo.canvasArr[j].cId == this.imgId) {
+          this.canvasInfo.canvasArr.splice(j, 1);
+        }
+      }
+
+      this.modifyImgId(index, listLenth);
+    },
+
+    /**删除之后修改 imgId， 重新渲染右侧画布 */
+    modifyImgId(index, listLenth) {
+      // 如果删除的是最后一张
+      if (index == listLenth - 1) {
+        this.selcetIndex = 0;
+      }
+
+    },
+
+    /**插入缩略图 */
+    addSideImg(index) {
+      console.log("插入", index);
+      console.log(this.countList);
+      var id = this.$utils.get_Id();
+      this.countList.splice(index + 1, 0, { id: id });
+      console.log(this.countList);
+    },
+
+    /**平铺排列 */
+    repeatList() {
+      this.isRepeat = true;
+    },
+
+    // 提示框
+    tipBox(text, type) {
+      this.$message({
+        message: text,
+        type: type,
+        customClass: "toast-box " + type + "-toast",
+        duration: 2000,
+        iconClass: "toast-box-icon " + type + "-toast-icon"
+      });
     }
   }
 };
