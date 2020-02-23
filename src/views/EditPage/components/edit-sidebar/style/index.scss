@@ -48,6 +48,11 @@
           background-color: #ffffff;
           border: 1px solid #0ab087;
           cursor: pointer;
+          .list-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+          }
           img {
             width: 248px;
             height: 148px;
@@ -92,13 +97,10 @@
     }
 }
 .item-btns{
-  position: absolute;
   display: flex;
   justify-content: space-between;
   width: 50px;
   height: 24px;
-  top: 5px;
-  right: 10px;
   z-index: 9;
   .item-delete,
   .item-create {
@@ -203,6 +205,7 @@
     border: 3px solid #0ab087;
   }
   .repeat-ppt-item{
+    position: relative;
     transition: All 0.5s ease-in-out;
     -webkit-transition: All 0.5s ease-in-out;
     -moz-transition: All 0.5s ease-in-out;
@@ -213,6 +216,11 @@
       -moz-transform: scale(1.1);
       -o-transform: scale(1.1);
       -ms-transform: scale(1.1);
+    }
+    .repeat-btn {
+      position: absolute;
+      right: 10px;
+      top: 5px;
     }
     img {
       width: 100%;

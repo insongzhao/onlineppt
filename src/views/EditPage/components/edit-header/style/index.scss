@@ -42,10 +42,30 @@
     background: url("~assets/editPage/eraser.png");
   }
 }
-.rename-word{
+.name-word {
   float: left;
-  margin-left: 40px;
-  margin-top: 15px;
+  width: 150px;
+  height: 20px;
+  margin-left: 580px;
+  margin-top: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  color: #ffffff;
+  .name {
+    float: left;
+    width: 120px;
+    height: 40px;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .suffix {
+    float: right;
+    width: 30px;
+    height: 40px;
+  }
 }
 .func-btns{
   float: right;

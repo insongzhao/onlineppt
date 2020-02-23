@@ -91,9 +91,51 @@
     height: 750px;
     border: 1px solid red;
   }
+  .panel-content {
+    flex: 1;
+    width: 100%;
+    height: 750px;
+    border: 1px solid black;
+    .start-work {
+      position: relative;
+      width: 100%;
+      height: 60px;
+      margin-top: 50px;
+      .start-btn {
+        position: absolute;
+        width: 260px;
+        height: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #ffffff;
+        background-color: #10EAB0;
+        
+        box-shadow: 0 8px 18px 0 rgba(15,36,152,.16);
+        border-radius: 29px;
+        cursor: pointer;
+        span {
+          display: inline-block;
+          font-size: 20px;
+          text-align: center;
+          margin-top: -18px;
+          vertical-align: middle;
+          font-weight: 700;
+        }
+      }
+      .start-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-top: 18px;
+        margin-left: 5px;
+        background: url("~assets/editPage/start-icon.png");
+      }
+    }
+
+  }
 
   .panel-intro {
-    flex: 1;
+    // flex: 1;
     width: 100%;
     height: 130px;
     margin-top: 150px;

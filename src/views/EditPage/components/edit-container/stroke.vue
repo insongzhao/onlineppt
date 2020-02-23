@@ -280,7 +280,7 @@ export default {
 .edit-ico-line_weight {
   width: 80px;
   height: 30px;
-  border: 1px solid black;
+  background: url("~assets/editPage/stroke/line-weight.png");
 }
 .pick-stroke-color {
   position: absolute;

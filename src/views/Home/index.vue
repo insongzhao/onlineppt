@@ -15,14 +15,22 @@
     <el-main>
       <div class="index-panel">
         <div class="panel-img-left"></div>
-        <div class="panel-intro">
-          <span class="intro-text"
-            >强大的在线制作幻灯片工具，轻松创造优秀作品</span
-          >
-          <span class="intro-tips noselect"
-            >在线制作幻灯片，各种模板个性推荐，作品轻松搞定！</span
-          >
-          <div class="more-feature noselect">更多特色</div>
+        <div class="panel-content">
+          <div class="panel-intro">
+            <span class="intro-text"
+              >强大的在线制作幻灯片工具，轻松创造优秀作品</span
+            >
+            <span class="intro-tips noselect"
+              >在线制作幻灯片，各种模板个性推荐，作品轻松搞定！</span
+            >
+            <div class="more-feature noselect">更多特色</div>
+          </div>
+          <div class="start-work">
+            <div class="start-btn" @click="startNewWork">
+              <span>立即开始</span>
+              <i class="start-icon"></i>
+            </div>
+          </div>
         </div>
         <div class="panel-img-right"></div>
       </div>
@@ -49,6 +57,10 @@ export default {
     },
     editWork() {
       this.$router.push({ name: "editPage" });
+    },
+    /**跳转到新建幻灯片页面 */
+    startNewWork() {
+      this.$router.push({ name: "newWork" });
     }
   }
 };

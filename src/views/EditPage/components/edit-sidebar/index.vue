@@ -15,7 +15,7 @@
               :class="{ select: selcetIndex == index }"
             >
               <img :src="getThumImg(item.id)" />
-              <div class="item-btns" v-show="selcetIndex == index">
+              <div class="item-btns list-btn" v-show="selcetIndex == index">
                 <div class="item-delete" @click.stop="delCanvas(index)"></div>
                 <div class="item-create" @click.stop="addSideImg(index)"></div>
               </div>
@@ -27,7 +27,11 @@
             </div>
             <div class="change_show_type">
               <div class="show_list" title="列表排列"></div>
-              <div class="show_repeat" title="平铺排列" @click="repeatList"></div>
+              <div
+                class="show_repeat"
+                title="平铺排列"
+                @click="repeatList"
+              ></div>
             </div>
           </div>
         </div>
@@ -56,7 +60,7 @@
             :class="{ select: selcetIndex == index }"
           >
             <img :src="getThumImg(item.id)" />
-            <div class="item-btns" v-show="selcetIndex == index">
+            <div class="item-btns repeat-btn" v-show="selcetIndex == index">
               <div class="item-delete" @click.stop="delCanvas(index)"></div>
               <div class="item-create" @click.stop="addSideImg(index)"></div>
             </div>
@@ -82,7 +86,7 @@ export default {
       currentState: "", // 画布状态
       canvasImg: "", // 画布缩略图
       selectedMode: false, // 侧边栏选中状态
-      selcetIndex: 0,
+      selcetIndex: -1,
       indexArr: [],
       isRepeat: false, // 是否平铺排列
       imgId: "",

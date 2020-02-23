@@ -38,6 +38,15 @@ const routes = [
       title: "编辑幻灯片",
       login: true
     }
+  },
+  {
+    path: "/newWok",
+    name: "newWork",
+    component: () => import("../views/newWork/index.vue"),
+    meta: {
+      title: "编辑幻灯片",
+      login: true
+    }
   }
 ];
 

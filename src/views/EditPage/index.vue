@@ -2,7 +2,7 @@
 <template>
   <div class="edit-page">
     <div class="edit-header">
-      <edit-header @delWork="delWork"></edit-header>
+      <edit-header @delWork="delWork" :pptName="pptName"></edit-header>
     </div>
     <div class="edit-container">
       <edit-sidebar class="edit-sidebar"></edit-sidebar>
@@ -32,10 +32,19 @@ export default {
   },
   data() {
     return {
-      isShowConfirm: false
+      isShowConfirm: false,
+      pptName: ""
     };
   },
+  mounted() {
+    this.getName();
+  },
   methods: {
+    /**获取 pptName */
+    getName() {
+      this.pptName = this.$route.params.pptName;
+      console.log("name+++++", this.pptName);
+    },
     delWork() {
       this.isShowConfirm = true;
     },

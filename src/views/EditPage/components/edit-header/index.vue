@@ -8,8 +8,10 @@
       <div class="recover-prev" title="恢复"></div>
       <div class="eraser" title="擦除" @click="removeObj"></div>
     </div>
-    <div class="rename-word">
-      <el-input placeholder="未命名的文档" v-model="defaultInput"></el-input>
+    <div class="name-word">
+      <div class="name">{{ this.pptName }}</div>
+      <div class="suffix">.ppt</div>
+      <!-- <el-input placeholder="未命名的文档" v-model="defaultInput"></el-input> -->
     </div>
     <div class="func-btns">
       <div class="delete-word common" @click="delWork">删除</div>
@@ -23,6 +25,7 @@
 import { mapState } from "vuex";
 export default {
   name: "edit-header",
+  props: ["pptName"],
   data() {
     return {
       defaultInput: ""
@@ -30,6 +33,9 @@ export default {
   },
   computed: {
     ...mapState(["canvasInfo"])
+  },
+  mounted(){
+    console.log("hhhhhh", this.canvasInfo.pptName);
   },
   methods: {
     delWork() {
