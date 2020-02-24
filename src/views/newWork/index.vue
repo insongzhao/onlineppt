@@ -6,13 +6,34 @@
         <div class="header-text noselect">我的幻灯片</div>
         <div class="return-btn" @click="returntoHome"></div>
       </div>
-      <div class="new-content"></div>
+      <div class="pptList scroll">
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column type="index" width="50">
+          </el-table-column>
+          <el-table-column prop="date" label="我的幻灯片" width="740">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="120">
+            <template slot-scope="scope">
+              <el-button
+                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                type="text"
+                size="small">
+                移除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+    </div>
       <div class="new-footer">
         <div class="new-work-btn" @click="showDialog">
           新建幻灯片
         </div>
       </div>
     </div>
+    
 
     <!-- 新建弹窗 -->
     <newwork-dialog
@@ -33,10 +54,27 @@ export default {
   data() {
     return {
       isShowDialog: false, // 显示新建弹窗
-      defaultName: "" // ppt名称
+      defaultName: "", // ppt名称
+      tableData: [
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" },
+        { date: "毕业设计" }
+      ] // 所有幻灯片名称
     }
   },
-  methods:{
+  methods: {
+    deleteRow(index, rows) {
+      console.log("dellllllll");
+      rows.splice(index, 1);
+    },
     /**返回首页 */
     returntoHome() {
       this.$router.push({ name: "home" });
@@ -64,4 +102,9 @@ export default {
 </script>
 <style lang="scss" scope>
 @import "./style/index.scss";
+</style>
+<style lang="scss">
+.el-button--text {
+  color: #0ab087 !important;
+}
 </style>

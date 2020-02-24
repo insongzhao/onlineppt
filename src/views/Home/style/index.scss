@@ -8,6 +8,7 @@
   width: 100%;
   height: 60px;
   background-color: transparent;
+  // background-color: #ffffff;
   z-index: 2;
 
   .logo-pic {
@@ -62,6 +63,21 @@
   }
 }
 
+.start {
+  background-color: #ffffff;
+  .header-login {
+    .login-text {
+      color: #0ab087;
+    }
+  }
+  .header-register {
+    background-color: #0ab087;
+    .register-text {
+      color: #ffffff;
+    }
+  }
+}
+
 .index-panel {
   position: absolute;
   display: flex;
@@ -83,24 +99,21 @@
   .panel-img-left {
     width: 200px;
     height: 750px;
-    border: 1px solid red;
   }
 
   .panel-img-right {
     width: 300px;
     height: 750px;
-    border: 1px solid red;
   }
   .panel-content {
     flex: 1;
     width: 100%;
     height: 750px;
-    border: 1px solid black;
     .start-work {
       position: relative;
       width: 100%;
       height: 60px;
-      margin-top: 50px;
+      margin-top: 40px;
       .start-btn {
         position: absolute;
         width: 260px;
@@ -131,16 +144,38 @@
         background: url("~assets/editPage/start-icon.png");
       }
     }
+    .swiper-img {
+      position: relative;
+      width:100%;
+      height: 700px;
+      margin-top: 40px;
+      background-color: #ffffff;
+      .item,
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .page {
+        position: absolute;
+        width: 100px;
+        height: 30px;
+        right: 20px;
+        bottom: 10px;
+        li{
+          float: left;
+          margin-right: 10px;
+          cursor: pointer;
+        }
+      }
+    }
 
   }
 
   .panel-intro {
-    // flex: 1;
     width: 100%;
     height: 130px;
-    margin-top: 150px;
+    margin-top: 140px;
     text-align: center;
-    border: 1px solid black;
 
     .intro-text {
       display: block;
@@ -167,5 +202,22 @@
       border: 1px solid #f1f3f4;
       cursor: pointer;
     }
+  }
+}
+
+.recommend-module {
+  position: absolute;
+  width: 100%;
+  height: 600px;
+  top: 1110px;
+  padding: 50px 60px;
+  border: 1px solid black;
+  .module-title {
+    width: 100%;
+    height: 64px;
+    font-size: 48px;
+    font-weight: 400;
+    color: #535C81;
+
   }
 }

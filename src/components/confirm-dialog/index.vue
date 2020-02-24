@@ -83,7 +83,6 @@ export default {
   margin: -2px 5px 0 0;
   width: 26px;
   height: 28px;
-  //   background: url("~assets/images/appDialog/icon-logo.png") center no-repeat;
 }
 
 .icon-tips {

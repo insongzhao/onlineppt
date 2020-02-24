@@ -38,12 +38,17 @@
 .new-content {
     width: 100%;
 }
+.pptList {
+    position: absolute;
+    top: 60px;
+    bottom: 100px;
+    padding: 0px 40px;
+}
 .new-footer {
     position: absolute;
     width: 100%;
     height: 100px;
     bottom: 0;
-    border: 1px solid black;
     .new-work-btn {
         width: 120px;
         height: 44px;

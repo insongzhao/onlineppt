@@ -4,10 +4,19 @@
     <div class="dialog-page">
       <div class="add-img"></div>
       <div class="input-name">
-        <el-input v-model="defaultName" placeholder="请输入幻灯片名称"></el-input>
+        <el-input
+          v-model="defaultName"
+          placeholder="请输入幻灯片名称"
+        ></el-input>
       </div>
       <div class="dialog-btn-group">
-        <button class="btn sureDel" :class="{sure:defaultName != ''}" @click="sureAdd">确认</button>
+        <button
+          class="btn sureDel"
+          :class="{ sure: defaultName != '' }"
+          @click="sureAdd"
+        >
+          确认
+        </button>
         <button class="btn cancelDel" @click="closeDialog">取消</button>
       </div>
     </div>
