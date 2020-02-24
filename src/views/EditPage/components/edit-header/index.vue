@@ -35,14 +35,14 @@ export default {
     ...mapState(["canvasInfo"])
   },
   mounted(){
-    console.log("hhhhhh", this.canvasInfo.pptName);
   },
   methods: {
     delWork() {
       this.$emit("delWork");
     },
     returnHome() {
-      this.$router.push({ path: "/" });
+      this.$emit("returnHome");
+      // this.$router.push({ path: "/" });
     },
     /**橡皮擦除 */
     removeObj() {

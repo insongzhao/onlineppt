@@ -7,25 +7,32 @@
         <div class="return-btn" @click="returntoHome"></div>
       </div>
       <div class="pptList scroll">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column type="index" width="50">
-          </el-table-column>
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+          v-show="tableData.length > 0"
+        >
+          <el-table-column type="index" width="50"> </el-table-column>
           <el-table-column prop="date" label="我的幻灯片" width="740">
           </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="120">
+          <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="deleteRow(scope.$index, tableData)"
                 type="text"
-                size="small">
+                size="small"
+              >
                 移除
               </el-button>
+              <el-button type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
+
+        <!-- 缺省图 -->
+        <div class="no-resource" v-show="tableData.length == 0">
+          <span class="noselect">暂无幻灯片</span>
+        </div>
     </div>
       <div class="new-footer">
         <div class="new-work-btn" @click="showDialog">
@@ -33,7 +40,6 @@
         </div>
       </div>
     </div>
-    
 
     <!-- 新建弹窗 -->
     <newwork-dialog

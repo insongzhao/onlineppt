@@ -43,6 +43,20 @@
     top: 60px;
     bottom: 100px;
     padding: 0px 40px;
+    .no-resource {
+        position: relative;
+        width: 450px;
+        height: 450px;
+        margin-left: 240px;
+        background: url("~assets/editPage/bg-nodata.png") no-repeat center;
+        span {
+            position: absolute;
+            display: inline-block;
+            bottom: 50px;
+            left: 178px;
+            font-size: 16px;
+        }
+    }
 }
 .new-footer {
     position: absolute;

@@ -2,7 +2,7 @@
 <template>
   <div class="edit-page">
     <div class="edit-header">
-      <edit-header @delWork="delWork" :pptName="pptName"></edit-header>
+      <edit-header @delWork="delWork" :pptName="pptName"  @returnHome="isShowSaveDialog = true"></edit-header>
     </div>
     <div class="edit-container">
       <edit-sidebar class="edit-sidebar"></edit-sidebar>
@@ -14,6 +14,10 @@
       @closeDialog="closeDialog"
       @sureDel="sureDel"
     ></confirm-dialog>
+
+    <save-dialog v-show="isShowSaveDialog" @returntoHome="returntoHome" @saveReturn="saveReturn" @closeDialog=closeDialog>
+
+    </save-dialog>
   </div>
 </template>
 
@@ -22,17 +26,20 @@ import EditHeader from "./components/edit-header";
 import ConfirmDialog from "@/components/confirm-dialog";
 import EditSidebar from "./components/edit-sidebar";
 import EditContainer from "./components/edit-container";
+import SaveDialog from "@/components/save-dialog";
 export default {
   name: "editPage",
   components: {
     EditHeader,
     ConfirmDialog,
     EditSidebar,
-    EditContainer
+    EditContainer,
+    SaveDialog
   },
   data() {
     return {
       isShowConfirm: false,
+      isShowSaveDialog: false,
       pptName: ""
     };
   },
@@ -50,10 +57,25 @@ export default {
     },
     closeDialog() {
       this.isShowConfirm = false;
+      this.isShowSaveDialog = false;
     },
     /**删除幻灯片 */
     sureDel() {
       this.isShowConfirm = false;
+      this.$router.push({ name: "newWork" });
+    },
+
+    /**不保存直接退出 */
+    returntoHome() {
+      this.$router.push({ name: "home" });
+    },
+
+    /**保存并退出 */
+    saveReturn() {
+      // 保存操作
+
+      // 退出
+      this.$router.push({ name: "home" });
     }
   }
 };

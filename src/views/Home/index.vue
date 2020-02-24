@@ -23,7 +23,9 @@
             <span class="intro-tips noselect"
               >在线制作幻灯片，各种模板个性推荐，作品轻松搞定！</span
             >
-            <div class="more-feature noselect">更多特色</div>
+            <div class="more-feature noselect">
+              <a href="#feature">更多特色</a>
+            </div>
           </div>
           <div class="start-work">
             <div class="start-btn" @click="startNewWork">
@@ -56,7 +58,7 @@
     </el-main>
     <el-footer>
       <div class="recommend-module">
-        <div class="module-title">2020 最新幻灯片模板推荐</div>
+        <div class="module-title" id="feature">2020 最新幻灯片模板推荐</div>
       </div>
       <div class="container-footer"></div>
     </el-footer>

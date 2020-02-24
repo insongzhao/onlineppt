@@ -201,6 +201,10 @@
       background-color: rgb(46, 191, 160);
       border: 1px solid #f1f3f4;
       cursor: pointer;
+      a {
+        text-decoration: none;
+        color: #ffffff;
+      }
     }
   }
 }
