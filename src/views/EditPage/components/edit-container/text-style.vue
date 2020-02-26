@@ -1,6 +1,6 @@
 <!-- 文字设置弹窗-->
 <template>
-  <div class="set-text-box">
+  <div class="set-text-box" @click.stop>
     <el-card class="text-card">
       <div class="text-module font_family">
         <div

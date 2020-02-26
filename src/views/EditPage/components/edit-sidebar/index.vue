@@ -52,19 +52,23 @@
             <span>新建幻灯片</span>
           </div>
           <!-- 每张ppt缩略图 -->
-          <div
-            class="repeat-ppt-item item"
-            @click="renderCanvas(index, item.id)"
-            v-for="(item, index) in countList"
-            :key="item.id"
-            :class="{ select: selcetIndex == index }"
-          >
-            <img :src="getThumImg(item.id)" />
-            <div class="item-btns repeat-btn" v-show="selcetIndex == index">
-              <div class="item-delete" @click.stop="delCanvas(index)"></div>
-              <div class="item-create" @click.stop="addSideImg(index)"></div>
+          <v-touch>
+
+          
+            <div
+              class="repeat-ppt-item item"
+              @click="renderCanvas(index, item.id)"
+              v-for="(item, index) in countList"
+              :key="item.id"
+              :class="{ select: selcetIndex == index }"
+            >
+              <img :src="getThumImg(item.id)" />
+              <div class="item-btns repeat-btn" v-show="selcetIndex == index">
+                <div class="item-delete" @click.stop="delCanvas(index)"></div>
+                <div class="item-create" @click.stop="addSideImg(index)"></div>
+              </div>
             </div>
-          </div>
+          </v-touch>
         </div>
       </div>
     </div>
@@ -118,6 +122,7 @@ export default {
     /**添加空白幻灯片 */
     addCanvas() {
       this.countList.push({ id: this.$utils.get_Id() });
+      this.canvasInfo.thumList = this.countList;
       // this.$store.commit("addCanvas");
     },
 
@@ -180,6 +185,7 @@ export default {
       var listLenth = this.countList.length;
       // 删除缩略图
       this.countList.splice(index, 1);
+      this.canvasInfo.thumList = this.countList;
       console.log("hou", this.countList);
 
       // 删除缩略图数据
@@ -221,6 +227,7 @@ export default {
       console.log(this.countList);
       var id = this.$utils.get_Id();
       this.countList.splice(index + 1, 0, { id: id });
+      this.canvasInfo.thumList = this.countList;
       console.log(this.countList);
     },
 

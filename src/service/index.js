@@ -7,8 +7,8 @@ import axios from "axios";
 import config from "./config";
 
 // 基地址
-// config.baseURL = "http://www.insozhao.cn/";
-config.baseURL = "http://47.101.146.230/";
+config.baseURL = "http://www.insozhao.cn:8888";
+// config.baseURL = "http://localhost:8888/";
 // config.headers.token = loginInfo.token;
 
 const service = axios.create(config);

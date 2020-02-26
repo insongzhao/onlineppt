@@ -8,7 +8,7 @@ function resolve(dir) {
 let ApiOnlineProxyList = {
   "/api": {
     // target: 'http://www.insozhao.cn/',
-    target: "http://47.101.146.230/",
+    target: "http://www.insozhao.cn:8888",
     ws: true,
     changeOrigin: true,
     pathRewrite:{

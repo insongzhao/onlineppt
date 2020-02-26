@@ -2,7 +2,7 @@
 <template>
   <div class="edit-page">
     <div class="edit-header">
-      <edit-header @delWork="delWork" :pptName="pptName"  @returnHome="isShowSaveDialog = true"></edit-header>
+      <edit-header ref="editHeader" @delWork="delWork" :pptName="pptName"  @returnHome="isShowSaveDialog = true"></edit-header>
     </div>
     <div class="edit-container">
       <edit-sidebar class="edit-sidebar"></edit-sidebar>
@@ -73,7 +73,7 @@ export default {
     /**保存并退出 */
     saveReturn() {
       // 保存操作
-
+      this.$refs.editHeader.savePPT();
       // 退出
       this.$router.push({ name: "home" });
     }

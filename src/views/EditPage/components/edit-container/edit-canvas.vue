@@ -159,9 +159,7 @@ export default {
       // this.canvasObj.skipTargetFind = true;
     },
     // 初始化
-    initCanvas(thumIndex) {
-      console.log("thumIndex", thumIndex);
-      // var _this = this;
+    initCanvas() {
       this.canvasObj = new fabric.Canvas("canvas", {
         isDrawingMode: false, //设置是否可以绘制
         selectable: true, //设置控件是否可以选中拖动

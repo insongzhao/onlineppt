@@ -3,7 +3,7 @@
   <div class="header-page">
     <div class="header-logo"></div>
     <div class="operate-btns">
-      <div class="save-prev" title="保存"></div>
+      <div class="save-prev" title="保存" @click="savePPT"></div>
       <div class="return-prev" title="撤销"></div>
       <div class="recover-prev" title="恢复"></div>
       <div class="eraser" title="擦除" @click="removeObj"></div>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { savePPT } from "../../../../service/ppt";
 import { mapState } from "vuex";
 export default {
   name: "edit-header",
@@ -32,7 +33,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["canvasInfo"])
+    ...mapState(["canvasInfo", "loginInfo"])
   },
   mounted(){
   },
@@ -48,6 +49,37 @@ export default {
     removeObj() {
       
     },
+    /**保存 canvas 的所有信息 */
+    savePPT() {
+      let saveInfo = {},
+        userId = this.loginInfo.userId,
+        pptInfo = [],
+        pptInfoItem = {},
+        pptDataItem = {};
+      
+      pptDataItem.canvasThum = this.canvasInfo.canvasThum;
+      pptDataItem.canvasArr = this.canvasInfo.canvasArr;
+      pptDataItem.thumList = this.canvasInfo.thumList;
+
+      pptInfoItem.pptname = this.pptName;
+      pptInfoItem.pptData = pptDataItem;
+
+      pptInfo.push(pptInfoItem);
+
+      saveInfo.userid = userId;
+      saveInfo.pptinfo = pptInfo;
+
+      console.log("wahh");
+      console.log(saveInfo);
+
+      savePPT(saveInfo)
+        .then(res => {
+          console.log("success", res);
+        })
+        .catch(err => {
+          console.log("err", err);
+        });
+    }
   }
 };
 </script>

@@ -37,33 +37,33 @@
     </div>
     <!-- 文本设置 -->
     <transition name="zoom">
-      <text-style v-show="isShowTextBox"></text-style>
+      <text-style v-show="isShowTextBox && isShow"></text-style>
     </transition>
 
     <!-- 形状 -->
     <transition name="zoom">
-      <shape v-show="isShowShape"></shape>
+      <shape v-show="isShowShape && isShow"></shape>
     </transition>
 
     <!-- 文本 -->
     <transition name="zoom">
-      <edit-text v-show="isShowText"></edit-text>
+      <edit-text v-show="isShowText && isShow"></edit-text>
     </transition>
 
     <!-- 填充 -->
     <transition name="zoom">
-      <fill v-show="isShowFill" ref="fillColor"></fill>
+      <fill v-show="isShowFill && isShow" ref="fillColor"></fill>
     </transition>
 
     <!-- 描边 -->
     <transition name="zoom">
-      <stroke v-show="isShowStroke" ref=""></stroke>
+      <stroke v-show="isShowStroke && isShow" ref=""></stroke>
     </transition>
 
     <!-- 旋转 -->
     <transition name="zoom">
       <rotate
-        v-show="isShowRotate"
+        v-show="isShowRotate && isShow"
         ref="rotateCanvas"
         @clockwiseRotate="clockwiseRotate"
         @anticlockwiseRotate="anticlockwiseRotate"
@@ -79,7 +79,11 @@
     </transition>
 
     <!-- canvas 编辑模块 -->
-    <edit-canvas ref="editCanvas" @currentState="getState" :imgId="imgId"></edit-canvas>
+    <edit-canvas
+      ref="editCanvas"
+      @currentState="getState"
+      :imgId="imgId"
+    ></edit-canvas>
   </div>
 </template>
 
@@ -146,11 +150,12 @@ export default {
       ],
       currentState: "", //当前画布状态
       TIndex: 0,
+      isShow: false, // 所有下拉框的显示
       imgId: ""
     };
   },
   mounted() {
-    // this.initPage();
+    this.initPage();
     // this.$Bus.$on("TIndex", e => {
     //   this.TIndex = e;
     // });
@@ -173,7 +178,7 @@ export default {
       }
     }
   },
-  computed:{
+  computed: {
     ...mapState(["canvasInfo"])
   },
   methods: {
@@ -181,7 +186,7 @@ export default {
     initPage() {
       let _this = this;
       document.addEventListener("click", () => {
-        _this.initPara();
+        _this.isShow = false;
       });
     },
     initPara() {
@@ -195,6 +200,7 @@ export default {
     },
     /**下拉框显示 */
     showDetails(id) {
+      this.initPara();
       switch (id) {
         case 0: // 文本
           this.isShowText = !this.isShowText;
@@ -215,10 +221,10 @@ export default {
           this.isShowRotate = !this.isShowRotate;
           break;
         case 6: //主题
-          console.log("zhuti");
           this.isShowTheme = !this.isShowTheme;
           break;
       }
+      this.isShow = true;
     },
 
     /**获取编辑状态 */

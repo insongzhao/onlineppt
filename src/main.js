@@ -6,6 +6,12 @@ import store from "./store/index";
 import fabric from "fabric";
 Vue.use(fabric);
 
+import VueTouch from "vue-touch";
+Vue.use(VueTouch, { name: "v-touch" });
+
+// import hammer from "hammer.js";
+// Vue.use(hammer);
+
 // import Bus from "./library/Bus/bus";
 // Vue.use(Bus);
 

@@ -140,8 +140,8 @@ export default {
       let password = self.registerInfo.password;
       let vertifycode = self.registerInfo.verifycode;
       let telephone = self.registerInfo.telephone;
-      let registertime = self.$validateUtil.getCurTime();
-      let timestamp = self.$validateUtil.timeStamp();
+      let registertime = this.$utls.getCurTime();
+      let timestamp = this.$utls.timeStamp();
 
       if (
         nickname == "" ||

@@ -1,5 +1,5 @@
 <template>
-  <el-container class="home-container scroll">
+  <el-container class="home-container">
     <el-header>
       <div class="container-header" :class="{ start: isScroll }">
         <div class="logo-pic">logo</div>
@@ -10,6 +10,7 @@
           <span class="register-text">注册</span>
         </div>
         <div class="header-avator" @click="editWork">avator</div>
+        <div class="header-username"></div>
       </div>
     </el-header>
     <el-main>
@@ -66,6 +67,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "home",
   data() {
@@ -81,7 +83,8 @@ export default {
     }
   },
   computed: {
-  //上一张
+    ...mapState(["loginInfo"]),
+    //上一张
     prevIndex() {
       if (this.currentIndex == 0) {
         return this.dataList.length - 1;
@@ -115,7 +118,11 @@ export default {
     },
     /**跳转到新建幻灯片页面 */
     startNewWork() {
-      this.$router.push({ name: "newWork" });
+      if (this.loginInfo.isLogin) {
+        this.$router.push({ name: "newWork" });
+      } else {
+        this.$router.push({ name: "login" });
+      }
     },
 
     gotoPage(index) {
@@ -139,7 +146,6 @@ export default {
         window.pageYOffset ||
         document.documentElement.scrollTop ||
         document.body.scrollTop;
-      console.log("Gundong" + scrollTop);
       if (scrollTop > 0) {
         this.isScroll = true;
       } else {

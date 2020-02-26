@@ -10,14 +10,14 @@
             无填充
           </div>
         </div>
-        <div class="fill-btn check-box" @click="checknoFill">
+        <div class="fill-btn check-box" @click.stop="checknoFill">
           <div class="btn-img-noselect btn-img" v-show="!isFillChecked"></div>
           <div class="btn-img-select btn-img" v-show="isFillChecked"></div>
           <div class="btn-text noselect" :class="{ active: isFillChecked }">
             纯色填充
           </div>
         </div>
-        <div class="pick-color">
+        <div class="pick-color" @click.stop>
           <el-color-picker
             :disabled="unpickColor"
             v-model="defaultColor"

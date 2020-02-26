@@ -8,7 +8,7 @@
         <div class="scaleX-btn item" title="水平镜像" @click="rotateScaleX"></div>
         <div class="scaleY-btn item" title="垂直镜像" @click="rotateScaleY"></div>
       </div>
-      <div class="count-num-btn">
+      <div class="count-num-btn" @click.stop>
         <el-input-number
           v-model="angelNum"
           controls-position="right"

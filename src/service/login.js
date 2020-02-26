@@ -6,7 +6,7 @@ import * as API from "./index";
 
 // 用户登录接口
 export const LoginWork = params => {
-  return API.POST("online-work/api/user/login", params);
+  return API.GET("api/sys_user/login", params);
 };
 
 // 用户注册接口

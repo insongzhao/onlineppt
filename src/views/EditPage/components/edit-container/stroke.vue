@@ -1,6 +1,6 @@
 <!-- 描边-->
 <template>
-  <div class="stroke-box">
+  <div class="stroke-box" @click.stop>
     <el-card class="card-box">
       <div class="border-style">
         <div class="border-module" title="描边样式">
@@ -22,7 +22,7 @@
             <div
               class="select-btn"
               :class="{ selected: isShowMenu }"
-              @click="selectStroke"
+              @click.stop="selectStroke"
             ></div>
           </div>
         </div>
@@ -50,7 +50,7 @@
             <div
               class="select-btn"
               :class="{ active: isShowList }"
-              @click="showThickMenu"
+              @click.stop="showThickMenu"
             ></div>
           </div>
           <ul class="stroke-module-list" v-show="isShowList">
@@ -147,6 +147,7 @@ export default {
     /**选择描边的粗细 */
     chooseThick(item) {
       console.log("thick", item);
+      this.isShowList = false;
       this.$Bus.$emit("thickness", item);
     },
 

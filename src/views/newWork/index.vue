@@ -24,7 +24,7 @@
               >
                 移除
               </el-button>
-              <el-button type="text" size="small">编辑</el-button>
+              <el-button type="text" size="small" @click="editppt(scope.$index)">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -102,6 +102,13 @@ export default {
         name: "editPage",
         params: { pptName: this.defaultName }
       });
+    },
+
+    /**打开幻灯片进入编辑页面 */
+    editppt(pptIdx) {
+      // 根据名称获取该幻灯片的数据
+      console.log("index", pptIdx);
+      console.log(this.tableData[pptIdx].date);
     }
   }
 };

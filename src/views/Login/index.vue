@@ -22,11 +22,11 @@
               class="user-password"
               v-model="password"
               :class="{ active: passwdFocus == true }"
-              type="text"
+              type="password"
               placeholder="您的密码"
               @click="inputPasswd()"
             />
-            <div class="user-login">
+            <div class="user-login" @click="submitWork">
               <span>{{ loginText }}</span>
             </div>
           </div>
@@ -46,6 +46,7 @@
 
 <script>
 import { LoginWork } from "../../service/login";
+import { mapState } from "vuex";
 export default {
   name: "login",
   data() {
@@ -56,6 +57,9 @@ export default {
       accountFocus: false,
       passwdFocus: false
     };
+  },
+  computed: {
+    ...mapState(["loginInfo"])
   },
   methods: {
     // 跳转到注册页面
@@ -70,45 +74,51 @@ export default {
       this.accountFocus = false;
       this.passwdFocus = true;
     },
+
     // 用户登录
     submitWork() {
+      this.loginInfo.userId = this.telephone;
+      if (this.telephone == "" || this.password == "") {
+        this.tipBox("将信息填写完整才能登录哦！", "error");
+        return;
+      } else if (
+        this.telephone.indexOf(" ") >= 0 ||
+        this.password.indexOf(" ") >= 0
+      ) {
+        this.tipBox("信息不能是空格哦！", "error");
+        return;
+      } else {
+        this.loginWork();
+      }
+    },
+
+    loginWork() {
       let self = this;
       // 获取登录用户的 ip 地址
       let ip = localStorage.getItem("ip");
-      let logintime = self.$validateUtil.getCurTime();
+      let logintime = this.$utils.getCurTime();
+      LoginWork({
+        // loginip: ip,
+        logintime: logintime,
+        username: this.telephone,
+        password: this.password
+      })
+        .then(res => {
+          console.log("dengluchengg");
+          self.loginText = "登录";
 
-      self.loginText = "登录中...";
+          if (res.data.code === 3) {
+            self.tipBox(res.data.message, "error");
+          }
 
-      if (self.telephone == "" || self.password == "") {
-        self.tipBox("将信息填写完整才能登录哦！", "error");
-        return;
-      } else if (
-        self.telephone.indexOf(" ") >= 0 ||
-        self.password.indexOf(" ") >= 0
-      ) {
-        self.tipBox("信息不能是空格哦！", "error");
-        return;
-      } else {
-        LoginWork({
-          loginip: ip,
-          logintime: logintime,
-          password: ""
+          self.tipBox('登录成功！','success');
+          self.loginInfo.isLogin = true;
+          self.$router.push({name:'home'});
         })
-          .then(res => {
-            self.loginText = "登录";
-
-            if (res.data.code === 3) {
-              self.tipBox(res.data.message, "error");
-            }
-
-            // self.tipBox('登录成功！','success');
-            // self.$router.push({name:'home'});
-          })
-          .catch(res => {
-            window.console.log("fail", res);
-            self.tipBox("登录失败，请检查用户名和密码！", "success");
-          });
-      }
+        .catch(res => {
+          console.log("fail", res);
+          self.tipBox("登录失败，请检查用户名和密码！", "error");
+        });
     },
     // 提示框
     tipBox(text, type) {
