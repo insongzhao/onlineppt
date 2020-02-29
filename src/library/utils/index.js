@@ -31,7 +31,19 @@ const getCurTime = () => {
   if (second < 10){
       second = "0" + second;
   }
-  return (year + '-' + month + '-' + weekday+ ' '+ hour + ':' + minute + ':' + second);
+  return (
+    year +
+    "/" +
+    month +
+    "/" +
+    weekday +
+    " " +
+    hour +
+    ":" +
+    minute +
+    ":" +
+    second
+  );
 };
 
 // 时间戳
