@@ -4,7 +4,7 @@
     <div class="header-logo"></div>
     <div class="operate-btns">
       <div class="save-prev" title="保存" @click="savePPT"></div>
-      <div class="return-prev" title="撤销"></div>
+      <div class="return-prev" title="撤销" @click="undoCanvas"></div>
       <div class="recover-prev" title="恢复"></div>
       <div class="eraser" title="擦除" @click="removeObj"></div>
     </div>
@@ -22,14 +22,16 @@
 </template>
 
 <script>
-import { savePPT } from "../../../../service/ppt";
+// import { savePPT } from "../../../../service/ppt";
 import { mapState } from "vuex";
+import qs from "qs";
 export default {
   name: "edit-header",
   props: ["pptName"],
   data() {
     return {
-      defaultInput: ""
+      defaultInput: "",
+      undoStep: 0 // 撤销操作
     }
   },
   computed: {
@@ -46,9 +48,7 @@ export default {
       // this.$router.push({ path: "/" });
     },
     /**橡皮擦除 */
-    removeObj() {
-      
-    },
+    removeObj() {},
     /**保存 canvas 的所有信息 */
     savePPT() {
       let saveInfo = {},
@@ -69,17 +69,31 @@ export default {
       saveInfo.userid = userId;
       saveInfo.pptinfo = pptInfo;
 
-      console.log("wahh");
       console.log(saveInfo);
 
-      savePPT(saveInfo)
+      let params = saveInfo;
+
+      // this.$axios.post("http://localhost:8888/api/sys_user/savePptInfo", params)
+      this.$axios({
+        method: "post",
+        url: "http://localhost:8888/api/sys_user/savePptInfo",
+        data: params
+      })
         .then(res => {
-          console.log("success", res);
+          console.log(res);
+          console.log("保存成功");
         })
         .catch(err => {
-          console.log("err", err);
+          console.log(err);
         });
-    }
+    },
+
+    /**撤销操作 */
+    undoCanvas() {
+      console.log("undo");
+      this.undoStep++;
+      this.$Bus.$emit("undoStep", this.undoStep);
+    },
   }
 };
 </script>

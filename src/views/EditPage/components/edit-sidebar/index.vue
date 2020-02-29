@@ -8,17 +8,36 @@
           <div class="side-ppt-list scroll">
             <!-- 每张ppt缩略图 -->
             <div
-              class="side-ppt-item"
+              class="side-ppt-item drag-block"
               @click="renderCanvas(index, item.id)"
               v-for="(item, index) in countList"
               :key="item.id"
-              :class="{ select: selcetIndex == index }"
-            >
-              <img :src="getThumImg(item.id)" />
-              <div class="item-btns list-btn" v-show="selcetIndex == index">
-                <div class="item-delete" @click.stop="delCanvas(index)"></div>
-                <div class="item-create" @click.stop="addSideImg(index)"></div>
-              </div>
+              :data-index="index"
+              :data-id="item.id"
+              :class="[
+                { select: selcetIndex == index },
+                isEleDraging && dragingTag.dragId === item.id ? 'draging' : ''
+              ]"
+            >{{ item.id }}
+              <v-touch
+                tag="div"
+                class="tag-container"
+                :pan-options="{ directions: 'all', threshold: 0 }"
+                @panstart="elementPanStart"
+                @panmove="elementPanMove"
+                @panend="elementPanEnd"
+              >
+                <div class="img-container">
+                  <img :src="getThumImg(item.id)" />
+                  <div class="item-btns list-btn" v-show="selcetIndex == index">
+                    <div class="item-delete" @click.stop="delCanvas(index)"></div>
+                    <div
+                      class="item-create"
+                      @click.stop="addSideImg(index)"
+                    ></div>
+                  </div>
+                </div>
+              </v-touch>
             </div>
           </div>
           <div class="side-footer">
@@ -38,6 +57,22 @@
       </div>
     </div>
 
+    <!--  移动中的标签  -->
+    <div
+      :style="{
+        top: dragingTag.top + 'px',
+        left: dragingTag.left + 'px',
+        width: dragingTag.width - 50 + 'px',
+        height: dragingTag.height - 50 + 'px'
+      }"
+      v-show="isEleDraging"
+      class="moveDrag"
+    >
+      <div class="img-container">
+        <img class="moveImg" :src="getThumImg(this.dragingTag.dragId)" />
+      </div>
+    </div>
+
     <div class="sidebar-page_repeat" v-show="isRepeat">
       <div class="repeat-header">
         <div class="page_size repeat">
@@ -52,23 +87,19 @@
             <span>新建幻灯片</span>
           </div>
           <!-- 每张ppt缩略图 -->
-          <v-touch>
-
-          
-            <div
-              class="repeat-ppt-item item"
-              @click="renderCanvas(index, item.id)"
-              v-for="(item, index) in countList"
-              :key="item.id"
-              :class="{ select: selcetIndex == index }"
-            >
-              <img :src="getThumImg(item.id)" />
-              <div class="item-btns repeat-btn" v-show="selcetIndex == index">
-                <div class="item-delete" @click.stop="delCanvas(index)"></div>
-                <div class="item-create" @click.stop="addSideImg(index)"></div>
-              </div>
+          <div
+            class="repeat-ppt-item item"
+            @click="renderCanvas(index, item.id)"
+            v-for="(item, index) in countList"
+            :key="item.id"
+            :class="{ select: selcetIndex == index }"
+          >
+            <img :src="getThumImg(item.id)" />
+            <div class="item-btns repeat-btn" v-show="selcetIndex == index">
+              <div class="item-delete" @click.stop="delCanvas(index)"></div>
+              <div class="item-create" @click.stop="addSideImg(index)"></div>
             </div>
-          </v-touch>
+          </div>
         </div>
       </div>
     </div>
@@ -77,11 +108,11 @@
 
 <script>
 import { mapState } from "vuex";
+// 移动位置坐标
+let _posX = 0,
+  _posY = 0;
 export default {
   name: "edit-sidebar",
-  // components: {
-  //   CanvasCard
-  // },
   data() {
     return {
       countList: [{ id: this.$utils.get_Id() }],
@@ -94,7 +125,34 @@ export default {
       indexArr: [],
       isRepeat: false, // 是否平铺排列
       imgId: "",
-      tIdArr: []
+      tIdArr: [],
+
+      isShowAnimate: false,
+      // 正在拖动
+      isEleDraging: false,
+
+      // 拖动中的标签
+      dragingTag: {
+        // 第几个月份分隔
+        subIndex: 0,
+        // 每个月份里面的下标
+        index: 0,
+        hoverSubIndex: 0,
+        // 拖动元素的位置
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+        dragId: -1,
+        // 元素起始位置
+        orginPosition: [0, 0],
+        // 最终停放的小组的序号
+        hoverIndex: "null"
+      },
+
+      // 当前滚动的标签盒子
+      $tagBox: null,
+      tagBoxScrollTop: 0
     };
   },
   mounted() {
@@ -119,6 +177,130 @@ export default {
     ...mapState(["canvasInfo"])
   },
   methods: {
+    /**拖动开始 */
+    elementPanStart(ev) {
+      this.isShowAnimate = true;
+      this.isClick = false;
+      // 判断触摸开始的位置是否为标签
+      let $box = this.parentIndexOf(
+        document.elementFromPoint(ev.center.x, ev.center.y),
+        "drag-block"
+      );
+      if ($box) {
+        let _index = Number($box.getAttribute("data-index")),
+          _dragId = $box.getAttribute("data-id"),
+          _clientRect = $box.getBoundingClientRect(),
+          _clientRectWidth = _clientRect.width,
+          _clientRectHeight = _clientRect.height;
+        this.isEleDraging = true;
+        this.dragingTag.dragId = _dragId;
+        this.dragingTag.index = _index;
+        this.startIndex = _index;
+        this.dragingTag.top = _clientRect.top;
+        this.dragingTag.left = _clientRect.left;
+        this.dragingTag.width = _clientRectWidth;
+        this.dragingTag.height = _clientRectHeight;
+        this.dragingTag.orginPosition[0] = _clientRect.top;
+        this.dragingTag.orginPosition[1] = _clientRect.left;
+      } else {
+        this.$tagBox = this.$parentIndexOf(
+          document.elementFromPoint(ev.center.x, ev.center.y),
+          "tag-container"
+        );
+        this.tagBoxScrollTop = this.$tagBox.scrollTop;
+      }
+    },
+
+    // 拖动进行中
+    elementPanMove(ev) {
+      ev.preventDefault();
+      if (this.isEleDraging) {
+        _posX = 0;
+        _posY = 0;
+        _posY = this.dragingTag.orginPosition[0] + ev.deltaY;
+        _posX = this.dragingTag.orginPosition[1] + ev.deltaX;
+        this.dragingTag.top = _posY;
+        this.dragingTag.left = _posX;
+
+        // 检测是否经过标签容器
+        let $container = this.parentIndexOf(
+          document.elementFromPoint(ev.center.x, ev.center.y),
+          "drag-block"
+        );
+        if ($container) {
+          let _index = $container.getAttribute("data-index"),
+            _id = $container.getAttribute("data-id");
+          // 经过标签容器，标签可放置
+          let hoverIndex = _index === "null" ? _index : Number(_index);
+          // 如果开始移动元素和落下元素不是同一个
+          if (_id != this.dragingTag.dragId && hoverIndex != "null") {
+            this.dragingTag.hoverIndex = hoverIndex;
+            let endIndex = this.dragingTag.hoverIndex;
+            let _countList = this.countList;
+            console.log("startIndex", this.startIndex);
+            console.log("endIndex", endIndex);
+            if (this.startIndex < endIndex) {
+              for (let i = 0; i < _countList.length; i++) {
+                if (i > this.startIndex && i <= endIndex) {
+                  _countList[i - 1] = _countList[i];
+                }
+              }
+              _countList[endIndex] = _countList[this.startIndex];
+            } else {
+              for (let j = _countList.length - 1; j >= 0; j--) {
+                if (j < this.startIndex && j >= endIndex) {
+                  _countList[j + 1] = _countList[j];
+                }
+              }
+            }
+          }
+        } else {
+          this.dragingTag.hoverIndex = "null";
+        }
+      } else {
+        this.$tagBox.scrollTop = this.tagBoxScrollTop - ev.deltaY;
+      }
+    },
+
+    /**拖动结束 */
+    elementPanEnd(e) {
+      console.log("end")
+      let _self = this;
+      if (_self.isEleDraging) {
+        _self.isEleDraging = false;
+        console.log("jieshu", _self.isEleDraging);
+        let $container = _self.parentIndexOf(
+          document.elementFromPoint(e.center.x, e.center.y),
+          "drag-block"
+        );
+        console.log("$contaner", $container);
+        if ($container) {
+          let _index = $container.getAttribute("data-index");
+          let hoverIndex = _index === "null" ? _index : Number(_index);
+          if (hoverIndex != "null") {
+            console.log("hoverindex", hoverIndex);
+          }
+        } else {
+          this.$tagBox = null;
+        }
+      }
+    },
+
+    // 判断元素父节点是否包含class
+    parentIndexOf(node, parentClassName) {
+      if (node.className.indexOf(parentClassName) !== -1) {
+        return node;
+      }
+      for (let i = 0, n = node; (n = n.parentNode); i++) {
+        if (n.className.indexOf(parentClassName) !== -1) {
+          return n;
+        }
+        //找不到目标父节点，防止死循环
+        if (n === document.documentElement) {
+          return false;
+        }
+      }
+    },
     /**添加空白幻灯片 */
     addCanvas() {
       this.countList.push({ id: this.$utils.get_Id() });
@@ -153,9 +335,6 @@ export default {
       this.canvasInfo.canvasThum.forEach(item => {
         this.tIdArr.push(item.tId);
       });
-
-      console.log("success!", this.canvasInfo.canvasThum);
-      console.log("aoligei", this.tIdArr);
     },
 
     /**点击缩略图 */
@@ -223,7 +402,6 @@ export default {
 
     /**插入缩略图 */
     addSideImg(index) {
-      console.log("插入", index);
       console.log(this.countList);
       var id = this.$utils.get_Id();
       this.countList.splice(index + 1, 0, { id: id });

@@ -34,10 +34,6 @@
           width: 254px !important;
           height: 154px !important;
           border: 3px solid #08C671!important;
-          // img {
-          //   width: 250px;
-          //   height: 150px;
-          // }
         }
         .side-ppt-item{
           position: relative;
@@ -45,9 +41,9 @@
           height: 150px;
           margin: 0 auto;
           margin-bottom: 20px;
-          background-color: #ffffff;
           border: 1px solid #0ab087;
           cursor: pointer;
+          
           .list-btn {
             position: absolute;
             top: 5px;
@@ -120,6 +116,28 @@
       background: url("~assets/editPage/sideadd_h.png") no-repeat;
     }
   }
+}
+
+.moveImg {
+  width: 248px;
+  height: 148px;
+  border: 3px solid #0ab087;
+}
+.moveDrag {
+  position: fixed;
+  pointer-events: none;
+}
+.drag-block {
+  &.draging {
+      position : relative;
+      z-index  : 1;
+      opacity  : .2;
+  }
+}
+.img-container {
+  width: 248px;
+  height: 148px;
+  background-color: #ffffff;
 }
 
 .page_size{

@@ -7,7 +7,7 @@ import axios from "axios";
 import config from "./config";
 
 // 基地址
-config.baseURL = "http://www.insozhao.cn:8888";
+config.baseURL = "http://localhsot:8888";
 // config.baseURL = "http://localhost:8888/";
 // config.headers.token = loginInfo.token;
 

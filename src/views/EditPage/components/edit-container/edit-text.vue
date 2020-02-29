@@ -11,50 +11,52 @@
           >
             大标题
           </li>
-          <li class="bold" style="font-size:12px;color:rgb(80,80,80)">
+          <li class="bold" style="font-size:12px;color:rgb(80,80,80)" @click="drawTitle(1)">
             小标题
           </li>
-          <li class="normal" style="font-size:12px;color:rgb(80,80,80)">
+          <li class="normal" style="font-size:12px;color:rgb(80,80,80)" @click="drawTitle(2)">
             正文
           </li>
-          <li class="normal" style="font-size:12px;color:rgb(80,80,80)">
+          <li class="normal" style="font-size:12px;color:rgb(80,80,80)" @click="drawTitle(3)">
             正文（小）
           </li>
-          <li class="normal" style="font-size:12px;color:#0ab087">
+          <li class="normal" style="font-size:12px;color:#0ab087" @click="drawTitle(4)">
             说明
           </li>
-          <li class="normal" style="font-size:12px;color:#ffffff;">
+          <li class="normal" style="font-size:12px;color:#ffffff;" @click="drawTitle(5)">
             <span
               style="display:inline-block;width:34px;height:20px;line-height:20px;background-color:#0ab087"
               >说明</span
             >
           </li>
-          <li class="normal" style="font-size:12px">引文</li>
-          <li class="normal" style="font-size:12px">注释</li>
+          <li class="normal" style="font-size:12px" @click="drawTitle(6)">引文</li>
+          <li class="normal" style="font-size:12px" @click="drawTitle(7)">注释</li>
           <li class="empty"></li>
         </ul>
         <ul class="bg-list">
-          <li class="bg-list-black bold common" style="font-size:16px;">
+          <li class="bg-list-black bold common" style="font-size:16px;" @click="drawTitle(8)">
             大标题
           </li>
-          <li class="bg-list-black bold common">
+          <li class="bg-list-black bold common" @click="drawTitle(9)">
             小标题
           </li>
-          <li class="bg-list-black normal common">
+          <li class="bg-list-black normal common" @click="drawTitle(10)">
             正文
           </li>
           <li
             class="bg-list-grey bold common"
             style="font-size:16px;background-color:#9da0ab"
+            @click="drawTitle(11)"
           >
             大标题
           </li>
-          <li class="bg-list-grey bold common" style="background-color:#9da0ab">
+          <li class="bg-list-grey bold common" style="background-color:#9da0ab" @click="drawTitle(12)">
             小标题
           </li>
           <li
             class="bg-list-grey normal common"
             style="background-color:#9da0ab"
+            @click="drawTitle(13)"
           >
             正文
           </li>

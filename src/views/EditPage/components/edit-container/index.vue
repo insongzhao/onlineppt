@@ -127,10 +127,6 @@ export default {
           title: "形状",
           iconUrl: require("@/assets/editPage/shape.png")
         },
-        // {
-        //   title: "对齐",
-        //   iconUrl: require("@/assets/editPage/align.png")
-        // },
         {
           title: "文字",
           iconUrl: require("@/assets/editPage/write.png")
@@ -151,7 +147,8 @@ export default {
       currentState: "", //当前画布状态
       TIndex: 0,
       isShow: false, // 所有下拉框的显示
-      imgId: ""
+      imgId: "",
+      undoStep: 0,  // 撤销操作
     };
   },
   mounted() {
@@ -163,20 +160,23 @@ export default {
       this.imgId = e;
       console.log("imgId", this.imgId);
     });
+    this.$Bus.$on("undoStep", e => {
+      this.undoStep = e;
+      console.log("undoStep", this.undoStep);
+    });
   },
   watch: {
-    // TIndex: {
-    //   deep: true,
-    //   handler: function() {
-    //     this.initRightCanvas(this.TIndex, this.canvasInfo.canvasArr);
-    //   }
-    // }
     imgId: {
       deep: true,
       handler: function() {
         this.initRightCanvas(this.imgId, this.canvasInfo.canvasArr);
       }
-    }
+    },
+    undoStep: {
+      handler: function() {
+        this.undoCanvas();
+      }
+    },
   },
   computed: {
     ...mapState(["canvasInfo"])
@@ -270,6 +270,11 @@ export default {
       this.$refs.editCanvas.clearCanvas();
       // 渲染右侧画布
       this.$refs.editCanvas.getCanvas(id, lastCurrent);
+    },
+
+    /**调用 edit-canvas 中撤退方法 */
+    undoCanvas() {
+      this.$refs.editCanvas.canvasUndo(this.imgId);
     }
   }
 };

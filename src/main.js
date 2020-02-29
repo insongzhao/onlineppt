@@ -2,15 +2,13 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/index";
+import axios from "axios"
 
 import fabric from "fabric";
 Vue.use(fabric);
 
 import VueTouch from "vue-touch";
 Vue.use(VueTouch, { name: "v-touch" });
-
-// import hammer from "hammer.js";
-// Vue.use(hammer);
 
 // import Bus from "./library/Bus/bus";
 // Vue.use(Bus);
@@ -21,6 +19,7 @@ import "./styles/index.scss";
 
 import lutils from "./library/utils";
 
+Vue.prototype.$axios = axios;
 Vue.prototype.$utils = lutils;
 
 Vue.config.productionTip = false;

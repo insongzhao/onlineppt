@@ -45,22 +45,34 @@
         <button class="bold-btn icon-btn" title="字体颜色">
           <i class="text-icon icon-btn_color"></i>
         </button>
-        <button class="italic-btn icon-btn" title="粗体">
-          <i class="text-icon icon-btn_bold"></i>
+        <button class="italic-btn icon-btn" title="粗体" @click="textBold">
+          <i class="text-icon icon-btn_bold" :class="{ isBold: isBold }"></i>
         </button>
-        <button class="italic-btn icon-btn" title="斜体">
-          <i class="text-icon icon-btn_italic"></i>
+        <button class="italic-btn icon-btn" title="斜体" @click="textItalic">
+          <i
+            class="text-icon icon-btn_italic"
+            :class="{ isItalic: isItalic }"
+          ></i>
         </button>
-        <button class="underline-btn" title="下划线">
-          <i class="text-icon icon-btn_underline"></i>
+        <button class="underline-btn" title="下划线" @click="textUnderline">
+          <i
+            class="text-icon icon-btn_underline"
+            :class="{ isUnderline: isUnderline }"
+          ></i>
         </button>
-        <button class="through-btn" title="中划线">
-          <i class="text-icon icon-btn_through"></i>
+        <button class="through-btn" title="中划线" @click="textThrough">
+          <i
+            class="text-icon icon-btn_through"
+            :class="{ isThrough: isThrough }"
+          ></i>
         </button>
-        <button class="shadow-btn" title="阴影">
-          <i class="text-icon icon-btn_shadow"></i>
+        <button class="shadow-btn" title="阴影" @click="textShadow">
+          <i
+            class="text-icon icon-btn_shadow"
+            :class="{ isShadow: isShadow }"
+          ></i>
         </button>
-        <button class="background-btn" title="高亮">
+        <button class="background-btn" title="高亮" @click="highLight">
           <i class="text-icon icon-btn_highlight"></i>
         </button>
         <button class="format-btn" title="格式刷">
@@ -68,7 +80,7 @@
         </button>
       </div>
       <div class="row-module">
-        <div class="line-height-moudule line-module">
+        <div class="line-height-moudule line-module" @click="textLineHeight">
           <h3>字行高</h3>
           <el-input-number
             v-model="defaultLineHeight"
@@ -80,12 +92,12 @@
           ></el-input-number>
         </div>
         <div class="align-module">
-          <button class="align-btn left-align" title="左对齐"></button>
-          <button class="align-btn center-align" title="居中"></button>
+          <button class="align-btn left-align" title="左对齐" @click="alignLeft" :class="{ leftAlign: leftAlign }"></button>
+          <button class="align-btn center-align" title="居中" @click="alignCenter" :class="{ centerAlign: centerAlign }" ></button>
         </div>
       </div>
       <div class="row-module">
-        <div class="white-space-moudule line-module">
+        <div class="white-space-moudule line-module" @click="lineSpace">
           <h3>字间距</h3>
           <el-input-number
             v-model="defaultSpace"
@@ -95,9 +107,16 @@
           ></el-input-number>
         </div>
         <div class="align-module">
-          <button class="align-btn right-align" title="右对齐"></button>
-          <button class="align-btn justify-align" title="两端对齐"></button>
+          <button class="align-btn right-align" title="右对齐" @click="alignRight" :class="{ rightAlign: rightAlign }"></button>
+          <button class="align-btn justify-align" title="两端对齐" @click="alignJustify" :class="{jusityAlign: justifyAlign}"></button>
         </div>
+      </div>
+
+      <div class="highLight-color" ref="highLight" v-show="showHighLight">
+        <el-color-picker
+          v-model="highLightColor"
+          @change="changeColor"
+        ></el-color-picker>
       </div>
     </el-card>
   </div>
@@ -139,12 +158,30 @@ export default {
       ],
       defaultSize: 14, // 默认字号
       defaultLineHeight: 1, // 默认行高
-      defaultSpace: 0
+      defaultSpace: 0,
+      isBold: false, // 是否为粗体
+      isItalic: false,
+      isUnderline: false,
+      isThrough: false,
+      isShadow: false,
+      leftAlign: false,
+      rightAlign: false,
+      centerAlign: false,
+      justifyAlign: false,
+      showHighLight: false,
+      highLightColor: "#ffffff" //默认高亮
     };
   },
+  mounted(){
+    // this.initParams();
+  },
   methods: {
-    /**获取选中的元素字体大小 */
-    getLastSize() {},
+    initParams() {
+      this.isBold = false;
+      this.isItalic = false;
+      this.isUnderline = false;
+      this.isThrough = false;
+    },
 
     chooseFontFamily() {
       this.showFamilyList = !this.showFamilyList;
@@ -160,6 +197,70 @@ export default {
       console.log("size", size);
       this.defaultSize = size;
       this.showSizeList = false;
+      this.$Bus.$emit("textSize", this.defaultSize);
+    },
+
+    /**粗体 */
+    textBold() {
+      this.isBold = !this.isBold;
+      console.log("hh", this.isBold);
+      this.$Bus.$emit("isBold", this.isBold);
+    },
+
+    /**斜体 */
+    textItalic() {
+      this.isItalic = !this.isItalic;
+      this.$Bus.$emit("isItalic", this.isItalic);
+    },
+    /**下划线 */
+    textUnderline(){
+      this.isUnderline = !this.isUnderline;
+      this.$Bus.$emit("isUnderline", this.isUnderline);
+    },
+    /**中划线 */
+    textThrough(){
+      this.isThrough = !this.isThrough;
+      this.$Bus.$emit("isThrough", this.isThrough);
+    },
+    /**阴影 */
+    textShadow(){
+      this.isShadow = !this.isShadow;
+      this.$Bus.$emit("isShadow", this.isShadow);
+    },
+
+    /**文本行高 */
+    textLineHeight() {
+      this.$Bus.$emit("lineHeight", this.defaultLineHeight);
+    },
+    /**文本间距 */
+    lineSpace() {
+      this.$Bus.$emit("lineSpace", this.defaultSpace);
+    },
+    alignLeft() {
+      this.leftAlign = !this.leftAlign;
+      this.$Bus.$emit("alignLeft", this.leftAlign);
+    },
+    alignRight() {
+      this.rightAlign = !this.rightAlign;
+      this.$Bus.$emit("alignRight", this.rightAlign);
+    },
+    alignCenter() {
+      console.log("center")
+      this.centerAlign = !this.centerAlign;
+      this.$Bus.$emit("centerAlign", this.centerAlign);
+    },
+    alignJustify() {
+      this.justifyAlign = !this.justifyAlign;
+      this.$Bus.$emit("justifyAlign", this.justifyAlign);
+    },
+
+    /**高亮 */
+    highLight() {
+      this.showHighLight = !this.showHighLight;
+      this.$refs.highLight.click;
+    },
+    changeColor() {
+
     }
   }
 };
@@ -173,6 +274,9 @@ export default {
     width: 250px;
     height: 200px;
   }
+}
+.highLight-color {
+  position: absolute;
 }
 .text-module {
   position: relative;
@@ -298,31 +402,36 @@ export default {
     }
     .icon-btn_bold {
       background: url("~assets/editPage/text/text-bold.png") no-repeat;
-      &:hover {
+      &:hover,
+      &.isBold {
         background: url("~assets/editPage/text/text-bold_hover.png") no-repeat;
       }
     }
     .icon-btn_italic {
       background: url("~assets/editPage/text/text-italic.png") no-repeat;
-      &:hover {
+      &:hover,
+      &.isItalic {
         background: url("~assets/editPage/text/text-italic_hover.png") no-repeat;
       }
     }
     .icon-btn_underline {
       background: url("~assets/editPage/text/text-underline.png") no-repeat;
-      &:hover {
+      &:hover,
+      &.isUnderline {
         background: url("~assets/editPage/text/text-underline_hover.png") no-repeat;
       }
     }
     .icon-btn_through {
       background: url("~assets/editPage/text/text-through.png") no-repeat;
-      &:hover {
+      &:hover,
+      &.isThrough {
         background: url("~assets/editPage/text/text-through_hover.png") no-repeat;
       }
     }
     .icon-btn_shadow {
       background: url("~assets/editPage/text/text-shadow.png") no-repeat;
-      &:hover {
+      &:hover,
+      &.isShadow {
         background: url("~assets/editPage/text/text-shadow_hover.png") no-repeat;
       }
     }
@@ -376,28 +485,32 @@ export default {
   }
   .left-align {
     background: url("~assets/editPage/text/left-align.png") no-repeat center;
-    &:hover {
+    &:hover,
+    &.leftAlign {
       background: url("~assets/editPage/text/left-align_hover.png") no-repeat
         center;
     }
   }
   .right-align {
     background: url("~assets/editPage/text/right-align.png") no-repeat center;
-    &:hover {
+    &:hover,
+    &.rightAlign {
       background: url("~assets/editPage/text/right-align_hover.png") no-repeat
         center;
     }
   }
   .center-align {
     background: url("~assets/editPage/text/center-align.png") no-repeat center;
-    &:hover {
+    &:hover,
+    &.centerAlign {
       background: url("~assets/editPage/text/center-align_hover.png") no-repeat
         center;
     }
   }
   .justify-align {
     background: url("~assets/editPage/text/justify.png") no-repeat center;
-    &:hover {
+    &:hover,
+    &.jusityAlign {
       background: url("~assets/editPage/text/justify_hover.png") no-repeat
         center;
     }

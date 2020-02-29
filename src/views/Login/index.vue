@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import { LoginWork } from "../../service/login";
+// import { LoginWork } from "../../service/login";
+
 import { mapState } from "vuex";
 export default {
   name: "login",
@@ -93,32 +94,52 @@ export default {
     },
 
     loginWork() {
-      let self = this;
+      let _this = this;
       // 获取登录用户的 ip 地址
-      let ip = localStorage.getItem("ip");
+      // let ip = localStorage.getItem("ip");
       let logintime = this.$utils.getCurTime();
-      LoginWork({
-        // loginip: ip,
-        logintime: logintime,
-        username: this.telephone,
-        password: this.password
-      })
-        .then(res => {
-          console.log("dengluchengg");
-          self.loginText = "登录";
 
-          if (res.data.code === 3) {
-            self.tipBox(res.data.message, "error");
+      this.$axios
+        .get("http://localhost:8888/api/sys_user/login", {
+          params: {
+            username: this.telephone,
+            password: this.password,
+            logintime: logintime
           }
-
-          self.tipBox('登录成功！','success');
-          self.loginInfo.isLogin = true;
-          self.$router.push({name:'home'});
         })
-        .catch(res => {
-          console.log("fail", res);
-          self.tipBox("登录失败，请检查用户名和密码！", "error");
+        .then(res => {
+          console.log(res);
+          _this.tipBox("登录成功！", "success");
+          _this.loginInfo.isLogin = true;
+          _this.$router.push({ name: "home" });
+        })
+        .catch(err => {
+          console.log(err);
+          _this.tipBox("登录失败，请检查用户名和密码！", "error");
+
         });
+      // LoginWork({
+      //   // loginip: ip,
+      //   logintime: logintime,
+      //   username: this.telephone,
+      //   password: this.password
+      // })
+      //   .then(res => {
+      //     console.log("dengluchengg");
+      //     self.loginText = "登录";
+
+      //     if (res.data.code === 3) {
+      //       self.tipBox(res.data.message, "error");
+      //     }
+
+      //     self.tipBox('登录成功！','success');
+      //     self.loginInfo.isLogin = true;
+      //     self.$router.push({name:'home'});
+      //   })
+      //   .catch(res => {
+      //     console.log("fail", res);
+      //     self.tipBox("登录失败，请检查用户名和密码！", "error");
+      //   });
     },
     // 提示框
     tipBox(text, type) {

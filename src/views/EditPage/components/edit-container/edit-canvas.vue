@@ -46,7 +46,9 @@ export default {
 
       //撤销回退相关操作状态配置表
       config: {
-        canvasState: [], //存储各状态的json数据
+        canvasData: [], // 每张画布每步操作的数据（重复）
+        undoCanvasState: "", // 撤销操作要渲染的画布数据
+        undoCanvasData: [], // 一张画布的每步操作数据
         currentStateIndex: -1,
         undoStatus: false, //撤销
         redoStatus: false, //回退
@@ -63,7 +65,21 @@ export default {
       strokeType: "",
       strokeColor: "#000000",
       thickness: "", // 描边粗细
-      cIdArr: []
+      cIdArr: [], // canvas 画布数据id
+      stateIdxArr: [],
+      textSize: "", // 文本字号
+      textStyleArr: {},
+      isBold: false,
+      isItalic: false,
+      isUnderline: false,
+      isThrough: false,
+      isShadow: false,
+      lineHeight: 1,
+      lineSpace: 2,
+      alignLeft: false,
+      alignRight: false,
+      centerAlign: false,
+      justifyAlign: false
     };
   },
   mounted() {
@@ -103,9 +119,49 @@ export default {
     this.$Bus.$on("thickness", e => {
       this.thickness = e;
     });
+    this.$Bus.$on("textSize", e => {
+      this.textSize = e;
+    });
+    this.$Bus.$on("isBold", e => {
+      this.isBold = e;
+    });
+    this.$Bus.$on("isItalic", e => {
+      this.isItalic = e;
+    });
+    this.$Bus.$on("isUnderline", e => {
+      this.isUnderline = e;
+    });
+    this.$Bus.$on("isThrough", e => {
+      this.isThrough = e;
+    });
+    this.$Bus.$on("isShadow", e => {
+      this.isShadow = e;
+    });
+    this.$Bus.$on("lineHeight", e => {
+      this.lineHeight = e;
+    });
+    this.$Bus.$on("lineSpace", e => {
+      this.lineSpace = e;
+    });
+    this.$Bus.$on("alignLeft", e => {
+      this.alignLeft = e;
+      console.log(this.alignLeft);
+    });
+    this.$Bus.$on("alignRight", e => {
+      this.alignRight = e;
+    });
+    this.$Bus.$on("centerAlign", e => {
+      this.centerAlign = e;
+    });
+    this.$Bus.$on("justifyAlign", e => {
+      this.justifyAlign = e;
+    });
   },
   computed: {
-    ...mapState(["canvasInfo"])
+    ...mapState(["canvasInfo"]),
+    // getSize: function(){
+    //   return this.textStyleArr.textSize;
+    // }
   },
   watch: {
     selectedColor: {
@@ -143,7 +199,69 @@ export default {
       handler: function() {
         this.modifythickness(this.thickness);
       }
-    }
+    },
+    textSize: {
+      deep: true,
+      handler: function() {
+        this.modifyTextSize(this.textSize);
+      }
+    },
+    isBold: {
+      handler: function() {
+        this.modifyTextBold(this.isBold);
+      }
+    },
+    isItalic: {
+      handler: function() {
+        this.modifyTextItalic(this.isItalic);
+      }
+    },
+    isUnderline: {
+      handler: function() {
+        this.modifyTextUnderline(this.isUnderline);
+      }
+    },
+    isThrough: {
+      handler: function() {
+        this.modifyTextThough(this.isThrough);
+      }
+    },
+    isShadow: {
+      handler: function() {
+        this.modifyTextShadow(this.isShadow);
+      }
+    },
+    lineHeight: {
+      handler: function() {
+        this.modifyLineHeight(this.lineHeight);
+      }
+    },
+    lineSpace: {
+      handler: function() {
+        this.modifyLineSpace(this.lineSpace);
+      }
+    },
+    alignLeft: {
+      handler: function() {
+        console.log("der")
+        this.modifyAlignLeft(this.alignLeft);
+      }
+    },
+    alignRight: {
+      handler: function() {
+        this.modifyAlignRight(this.alignRight);
+      }
+    },
+    centerAlign: {
+      handler: function() {
+        this.modifyAlignCenter(this.centerAlign);
+      }
+    },
+    justifyAlign: {
+      handler: function() {
+        this.modifyAlignJustify(this.justifyAlign);
+      }
+    },
   },
   methods: {
     /**获取画布的宽度 */
@@ -241,12 +359,10 @@ export default {
             (this.mouseTo.y - top) * (this.mouseTo.y - top)
         ) / 2;
       if (this.drawingObject) {
-        console.log("=================");
         this.canvasObj.remove(this.drawingObject);
       }
 
       if (this.textbox) {
-        console.log("+++++++++++++");
         //退出文本编辑状态
         this.textbox.exitEditing();
         this.textbox = null;
@@ -374,10 +490,209 @@ export default {
             top: top,
             width: width,
             fontSize: 32,
+            fontWeight: "bold",
             borderColor: "#2c2c2c",
             fill: this.color,
             hasControls: true,
             breakWords: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 1: // 小标题
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            fontWeight: "bold",
+            borderColor: "#2c2c2c",
+            fill: this.color,
+            hasControls: true,
+            breakWords: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 2: // 正文
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            letterSpace: 8,
+            borderColor: "#2c2c2c",
+            fill: this.color,
+            hasControls: true,
+            breakWords: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 3: // 正文(小)
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 16,
+            borderColor: "#2c2c2c",
+            fill: this.color,
+            hasControls: true,
+            breakWords: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 4: // 说明
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 16,
+            borderColor: "#2c2c2c",
+            fill: "#0ab087",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 5: // 说明(背景)
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 16,
+            textBackgroundColor: "#0ab087",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 6: // 引文
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 14,
+            borderColor: "#2c2c2c",
+            fill: "#707b8e",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 7: // 注释
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 14,
+            borderColor: "#2c2c2c",
+            fill: "#707b8e",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 8: // 大标题（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 32,
+            fontWeight: "bold",
+            textBackgroundColor: "#3c4252",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 9: // 小标题（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            fontWeight: "bold",
+            textBackgroundColor: "#3c4252",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 10: // 正文（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            textBackgroundColor: "#3c4252",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 11: // 大标题（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 32,
+            fontWeight: "bold",
+            textBackgroundColor: "#9DA0AB",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 12: // 小标题（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            fontWeight: "bold",
+            textBackgroundColor: "#9DA0AB",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
+          });
+          this.canvasObj.add(this.textbox);
+          this.textbox.enterEditing();
+          this.textbox.hiddenTextarea.focus();
+          break;
+        case 13: // 正文（背景）
+          this.textbox = new fabric.Textbox("", {
+            left: left,
+            top: top,
+            width: width,
+            fontSize: 24,
+            textBackgroundColor: "#9DA0AB",
+            borderColor: "#2c2c2c",
+            fill: "#ffffff",
+            hasControls: true
           });
           this.canvasObj.add(this.textbox);
           this.textbox.enterEditing();
@@ -390,41 +705,6 @@ export default {
         this.drawingObject = this.canvasObject;
       }
     },
-
-    /**绘制标题 */
-    // drawTitle(type) {
-    //   console.log("title", type);
-    //   var left = this.mouseFrom.x;
-    //   var top = this.mouseFrom.y;
-    //   var width = this.mouseTo.x - left;
-    //   // var height = this.this.mouseTo.y - this.mouseFrom.y;
-    //   if (this.drawingObject) {
-    //     this.canvasObj.remove(this.drawingObject);
-    //   }
-    //   switch (type) {
-    //     case 0: {
-    //       console.log("big-title");
-    //        var textbox = new fabric.Textbox("", {
-    //         left: left,
-    //         top: top,
-    //         width: width,
-    //         fontSize: 32,
-    //         borderColor: "#2c2c2c",
-    //         fill: this.color,
-    //         hasControls: true
-    //       });
-    //       break;
-    //     }
-    //   }
-    //     // this.canvasObj.add(textbox);
-    //     //   textbox.enterEditing();
-    //     //   textbox.hiddenTextarea.focus();
-    //   // if (this.canvasObject) {
-    //   //   // canvasObject.index = getCanvasObjectIndex();
-    //   //   this.canvasObj.add(this.canvasObject); //.setActiveObject(canvasObject)
-    //   //   this.drawingObject = this.canvasObject;
-    //   // }
-    // },
 
     /**绘制箭头方法 */
     drawArrow(fromX, fromY, toX, toY, theta, headlen) {
@@ -532,6 +812,95 @@ export default {
       this.canvasObj.renderAll();
     },
 
+    /**修改文本的属性 */
+    modifyTextSize(textSize) {
+      this.selectedObj.set("fontSize", textSize);
+      this.canvasObj.renderAll();
+    },
+
+    /**文本加粗 */
+    modifyTextBold(isBold){
+      if (isBold == true) {
+        this.selectedObj.fontWeight = "bold";
+      } else {
+        this.selectedObj.fontWeight = "normal";
+      }
+      this.canvasObj.renderAll();
+    },
+    /**文本斜体 */
+    modifyTextItalic(isItalic) {
+      if (isItalic == true) {
+        this.selectedObj.fontStyle = "italic";
+      } else {
+        this.selectedObj.fontStyle = "normal";
+      }
+      this.canvasObj.renderAll();
+    },
+    /**文本下划线 */
+    modifyTextUnderline(isUnderline) {
+      this.selectedObj.set("underline", isUnderline);
+      this.canvasObj.renderAll();
+    },
+
+    /**文本中划线 */
+    modifyTextThough(isThrough) {
+      this.selectedObj.set("linethrough", isThrough);
+      this.canvasObj.renderAll();
+    },
+    /**文本阴影 */
+    modifyTextShadow(isShadow) {
+      if (isShadow) {
+        console.log("shadow");
+        this.selectedObj.set("shadow", "rgba(0,0,0,0.3) 3px 3px 2px");
+      } else {
+        this.selectedObj.set("shadow", "");
+      }
+      this.canvasObj.renderAll();
+    },
+    /**文本行高 */
+    modifyLineHeight(lineHeight) {
+      this.selectedObj.set("lineHeight", lineHeight);
+      this.canvasObj.renderAll();
+    },
+    /**文本间距 */
+    modifyLineSpace(lineSpace) {
+      this.selectedObj.set("letterSpacing", lineSpace);
+      this.canvasObj.renderAll();
+    },
+    /**文本对齐 */
+    modifyAlignLeft(alignLeft) {
+       console.log("youduiqi");
+      if (alignLeft) {
+        console.log("youyouyou")
+        this.selectedObj.set("textAlign", "left");
+      }
+      this.canvasObj.renderAll();
+    },
+    modifyAlignRight(alignRight) {
+      if (alignRight) {
+        this.selectedObj.set("textAlign", "right");
+      } else {
+        this.selectedObj.set("textAlign", "left");
+      }
+      this.canvasObj.renderAll();
+    },
+    modifyAlignCenter(centerAlign) {
+      if (centerAlign) {
+        this.selectedObj.set("textAlign", "center");
+      } else {
+        this.selectedObj.set("textAlign", "left");
+      }
+      this.canvasObj.renderAll();
+    },
+    modifyAlignJustify(justifyAlign) {
+      if (justifyAlign) {
+        this.selectedObj.set("textAlign", "justify");
+      } else {
+        this.selectedObj.set("textAlign", "left");
+      }
+      this.canvasObj.renderAll();
+    },
+
     /**画布图片背景 */
     importBgImg(imgUrl) {
       console.log("设置画布背景图");
@@ -552,7 +921,6 @@ export default {
 
     /**画布纯色背景 */
     importBgColor(color) {
-      console.log("color", color);
       this.canvasObj.set("backgroundColor", color);
       this.canvasObj.renderAll();
     },
@@ -561,54 +929,131 @@ export default {
     getCanvasState() {
       this.currentState = JSON.stringify(this.canvasObj.toJSON());
       // 将当前状态放进全局 canvasArr 中
-      var canvasState = {};
+      // var canvasState = {};
+      // if (this.canvasInfo.canvasArr.length > 0) {
+      //   // 如果存在保存的canvas，则进行替换
+      //   for (var i = 0; i < this.canvasInfo.canvasArr.length; i++) {
+      //     if (this.canvasInfo.canvasArr[i].cId == this.imgId) {
+      //       this.canvasInfo.canvasArr[i].obj = this.currentState;
+      //     }
+      //   }
+      //   // 没有保存过 cId 为 imgId 的画布
+      //   if (this.cIdArr.indexOf(this.imgId) == -1) {
+      //     canvasState.cId = this.imgId;
+      //     canvasState.obj = this.currentState;
+      //     this.canvasInfo.canvasArr.push(canvasState);
+      //   }
+      // } else {
+      //   // canvasArr 为空时直接保存
+      //   canvasState.cId = this.imgId;
+      //   canvasState.obj = this.currentState;
+      //   this.canvasInfo.canvasArr.push(canvasState);
+      // }
+      // this.canvasInfo.canvasArr.forEach(item => {
+      //   this.cIdArr.push(item.cId);
+      // });
 
-      if (this.canvasInfo.canvasArr.length > 0) {
-        // 如果存在保存的canvas，则进行替换
-        for (var i = 0; i < this.canvasInfo.canvasArr.length; i++) {
-          if (this.canvasInfo.canvasArr[i].cId == this.imgId) {
-            this.canvasInfo.canvasArr[i].obj = this.currentState;
+      this.saveCanvasState(this.currentState);
+    },
+
+    /**保存每张画布的每步操作 */
+    // [{id:****,item:[{obj},{}]}]
+    saveCanvasState(currentState) {
+      let state = {},
+        curState = {};
+
+      if (this.config.canvasData.length > 0) {
+        this.config.canvasData.forEach(item => {
+          if (item.id == this.imgId) {
+            curState.obj = currentState;
+            item.item.push(curState);
           }
-        }
-        // 没有保存过 cId 为 imgId 的画布
-        if (this.cIdArr.indexOf(this.imgId) == -1) {
-          canvasState.cId = this.imgId;
-          canvasState.obj = this.currentState;
-          this.canvasInfo.canvasArr.push(canvasState);
+        });
+        if (this.stateIdxArr.indexOf(this.imgId) == -1) {
+          state.id = this.imgId;
+          state.item = [];
+          curState.obj = currentState;
+          state.item.push(curState);
+          this.config.canvasData.push(state);
         }
       } else {
-        // canvasArr 为空时直接保存
-        canvasState.cId = this.imgId;
-        canvasState.obj = this.currentState;
-        this.canvasInfo.canvasArr.push(canvasState);
+        state.id = this.imgId;
+        state.item = [];
+        curState.obj = currentState;
+        state.item.push(curState);
+        this.config.canvasData.push(state);
       }
-      this.canvasInfo.canvasArr.forEach(item => {
-        this.cIdArr.push(item.cId);
+
+      this.config.canvasData.forEach(item => {
+        this.stateIdxArr.push(item.id);
       });
 
-      console.log("加油", this.canvasInfo.canvasArr);
+      this.canvasInfo.canvasArr = this.config.canvasData;
+      console.log("songsonglove", this.config.canvasData);
     },
 
     /**渲染画布状态 */
     getCanvas(id, lastCurrent) {
-      console.log("下标", id);
       console.log("lastCurrent", lastCurrent);
-
+      // var canvasCurrent = "";
+      // // 获取该 id 的画布元素
+      // if (lastCurrent.length > 0) {
+      //   // 遍历数组，如果item.cId  等于画布 id，则渲染
+      //   for (var i = 0; i < lastCurrent.length; i++) {
+      //     if (lastCurrent[i].cId == id) {
+      //       canvasCurrent = lastCurrent[i].obj;
+      //     }
+      //   }
+      //   // 开始渲染
+      //   this.canvasObj.loadFromJSON(canvasCurrent, () => {
+      //     this.canvasObj.renderAll();
+      //   });
+      // }
       var canvasCurrent = "";
       // 获取该 id 的画布元素
       if (lastCurrent.length > 0) {
         // 遍历数组，如果item.cId  等于画布 id，则渲染
         for (var i = 0; i < lastCurrent.length; i++) {
-          if (lastCurrent[i].cId == id) {
-            canvasCurrent = lastCurrent[i].obj;
+          if (lastCurrent[i].id == id) {
+            canvasCurrent = lastCurrent[i].item;
           }
         }
-
         // 开始渲染
-        this.canvasObj.loadFromJSON(canvasCurrent, () => {
+        this.canvasObj.loadFromJSON(canvasCurrent[canvasCurrent.length - 1].obj, () => {
           this.canvasObj.renderAll();
         });
       }
+    },
+
+   /**画布撤销操作 */
+    canvasUndo(imgId) {
+      console.log("撤销");
+     
+      this.undoCanvasData = [];
+
+      if (this.config.canvasData.length > 0) {
+        // 遍历canvasData
+        for (var i = 0; i < this.config.canvasData.length; i++) {
+          if (this.config.canvasData[i].id == imgId) {
+            this.undoCanvasData = this.config.canvasData[i].item;
+            this.undoCanvasData.splice(this.undoCanvasData.length - 1, 1);
+          }
+        }
+        if (this.undoCanvasData.length >= 1) {
+          var lastCurrent = this.undoCanvasData[this.undoCanvasData.length - 1];
+          // 开始渲染
+          this.canvasObj.loadFromJSON(lastCurrent.obj, () => {
+            this.canvasObj.renderAll();
+          });
+          this.getCanvas(this.imgId, this.config.canvasData);
+        } else {
+          this.clearCanvas();
+        } 
+      } else {
+        console.log("已经是最新了");
+      }
+      this.undoStatus = true;
+      this.canvastoImg();
     },
 
     /**画布导出成图片 */
@@ -633,36 +1078,36 @@ export default {
     },
 
     /**记录每步操作,用户撤销和回退操作 */
-    updateCanvasState() {
-      if (this.config.undoStatus == false && this.config.redoStatus == false) {
-        if (
-          this.config.currentStateIndex <
-          this.config.canvasState.length - 1
-        ) {
-          //回退操作更新
-          let oldData = JSON.parse(JSON.stringify(this.config.canvasState));
-          this.config.canvasState = oldData.splice(
-            0,
-            this.config.currentStateIndex + 1
-          );
-          this.config.canvasState.push(this.currentState);
-        } else {
-          this.config.canvasState.push(this.currentState);
-        }
-        this.config.currentStateIndex = this.config.canvasState.length - 1;
-        // updateUnRedoBtnStatus();
-        if (
-          this.config.currentStateIndex == this.config.canvasState.length - 1 &&
-          this.config.currentStateIndex == 0
-        ) {
-          return;
-        }
-        if (this.isInitialStatus) {
-          this.isInitialStatus = false;
-          // updateInitialStatus(this.isInitialStatus);
-        }
-      }
-    }
+    // updateCanvasState() {
+    //   if (this.config.undoStatus == false && this.config.redoStatus == false) {
+    //     if (
+    //       this.config.currentStateIndex <
+    //       this.config.canvasState.length - 1
+    //     ) {
+    //       //回退操作更新
+    //       let oldData = JSON.parse(JSON.stringify(this.config.canvasState));
+    //       this.config.canvasState = oldData.splice(
+    //         0,
+    //         this.config.currentStateIndex + 1
+    //       );
+    //       this.config.canvasState.push(this.currentState);
+    //     } else {
+    //       this.config.canvasState.push(this.currentState);
+    //     }
+    //     this.config.currentStateIndex = this.config.canvasState.length - 1;
+    //     // updateUnRedoBtnStatus();
+    //     if (
+    //       this.config.currentStateIndex == this.config.canvasState.length - 1 &&
+    //       this.config.currentStateIndex == 0
+    //     ) {
+    //       return;
+    //     }
+    //     if (this.isInitialStatus) {
+    //       this.isInitialStatus = false;
+    //       // updateInitialStatus(this.isInitialStatus);
+    //     }
+    //   }
+    // }
   }
 };
 </script>
